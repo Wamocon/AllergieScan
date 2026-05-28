@@ -1,0 +1,58 @@
+{
+  "common": {
+    "appName": "AllergieScan",
+    "tagline": "Shop safely with allergies",
+    "login": "Sign in",
+    "register": "Sign up",
+    "logout": "Sign out",
+    "dashboard": "Dashboard",
+    "profile": "Profile",
+    "save": "Save",
+    "cancel": "Cancel",
+    "back": "Back",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success"
+  },
+  "auth": {
+    "email": "Email address",
+    "password": "Password",
+    "loginTitle": "Sign in",
+    "registerTitle": "Create account",
+    "magicLink": "Send magic link",
+    "magicLinkSent": "We sent you a login link via email.",
+    "orContinueWith": "or continue with",
+    "noAccount": "No account yet?",
+    "hasAccount": "Already have an account?",
+    "forgotPassword": "Forgot password?"
+  },
+  "scan": {
+    "title": "Check product",
+    "inputLabel": "Enter ingredient list",
+    "inputPlaceholder": "Enter or paste ingredients here (e.g. wheat flour, sugar, whole milk powder, soy lecithin)",
+    "checkButton": "Check",
+    "resultSafe": "Safe",
+    "resultWarning": "Caution",
+    "resultDanger": "Not suitable",
+    "noProfile": "Please create an allergy profile first.",
+    "unknownIngredients": "Unknown ingredients",
+    "matchedAllergens": "Detected allergens",
+    "confidence": "Confidence",
+    "source": "Source"
+  },
+  "profile": {
+    "title": "Allergy profile",
+    "subtitle": "Select your allergens and risk levels",
+    "riskLevel": "Risk level",
+    "critical": "Critical (anaphylaxis risk)",
+    "high": "High",
+    "medium": "Medium",
+    "allergenCount": "{count} allergens selected",
+    "saved": "Profile saved"
+  },
+  "result": {
+    "disclaimer": "This app is a decision aid and does not replace medical advice. When in doubt, always check the packaging yourself.",
+    "dataTimestamp": "Data as of",
+    "checkTimestamp": "Checked on"
+  }
+}

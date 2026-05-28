@@ -1,0 +1,58 @@
+{
+  "common": {
+    "appName": "AllergieScan",
+    "tagline": "Sicher einkaufen mit Allergie",
+    "login": "Anmelden",
+    "register": "Registrieren",
+    "logout": "Abmelden",
+    "dashboard": "Dashboard",
+    "profile": "Profil",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "back": "Zurueck",
+    "loading": "Laden...",
+    "error": "Fehler",
+    "success": "Erfolg"
+  },
+  "auth": {
+    "email": "E-Mail-Adresse",
+    "password": "Passwort",
+    "loginTitle": "Anmelden",
+    "registerTitle": "Konto erstellen",
+    "magicLink": "Magic Link senden",
+    "magicLinkSent": "Wir haben dir einen Login-Link per E-Mail gesendet.",
+    "orContinueWith": "oder weiter mit",
+    "noAccount": "Noch kein Konto?",
+    "hasAccount": "Bereits ein Konto?",
+    "forgotPassword": "Passwort vergessen?"
+  },
+  "scan": {
+    "title": "Produkt pruefen",
+    "inputLabel": "Zutatenliste eingeben",
+    "inputPlaceholder": "Zutaten hier eingeben oder einfuegen (z.B. Weizenmehl, Zucker, Vollmilchpulver, Sojalecithin)",
+    "checkButton": "Pruefen",
+    "resultSafe": "Geeignet",
+    "resultWarning": "Vorsicht",
+    "resultDanger": "Nicht geeignet",
+    "noProfile": "Bitte erstelle zuerst ein Allergieprofil.",
+    "unknownIngredients": "Unbekannte Zutaten",
+    "matchedAllergens": "Erkannte Allergene",
+    "confidence": "Sicherheit",
+    "source": "Quelle"
+  },
+  "profile": {
+    "title": "Allergieprofil",
+    "subtitle": "Waehle deine Allergene und Risikostufen",
+    "riskLevel": "Risikostufe",
+    "critical": "Kritisch (Anaphylaxie-Risiko)",
+    "high": "Hoch",
+    "medium": "Mittel",
+    "allergenCount": "{count} Allergene ausgewaehlt",
+    "saved": "Profil gespeichert"
+  },
+  "result": {
+    "disclaimer": "Diese App ist eine Entscheidungshilfe und ersetzt keine aerztliche Beratung. Pruefe im Zweifel immer die Verpackung selbst.",
+    "dataTimestamp": "Datenstand",
+    "checkTimestamp": "Geprueft am"
+  }
+}
