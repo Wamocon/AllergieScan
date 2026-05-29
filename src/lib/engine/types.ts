@@ -1,6 +1,7 @@
 export type RiskLevel = 'critical' | 'high' | 'medium'
 export type Confidence = 'definite' | 'probable' | 'possible'
 export type ScanResultType = 'safe' | 'warning' | 'danger'
+export type AllergenCategory = 'top14' | 'top30'
 
 export interface UserAllergenConfig {
   allergen_id: string
@@ -39,6 +40,7 @@ export interface AllergenHit {
   allergen_code: string
   allergen_name_de: string
   allergen_name_en: string
+  category: AllergenCategory
   matched_terms: string[]
   confidence: Confidence
   risk_level: RiskLevel

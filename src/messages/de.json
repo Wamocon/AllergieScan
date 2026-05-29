@@ -38,7 +38,9 @@
     "unknownIngredients": "Unbekannte Zutaten",
     "matchedAllergens": "Erkannte Allergene",
     "confidence": "Sicherheit",
-    "source": "Quelle"
+    "source": "Quelle",
+    "categoryTop14": "EU-Pflicht",
+    "categoryTop30": "Erweitert"
   },
   "profile": {
     "title": "Allergieprofil",
@@ -48,7 +50,11 @@
     "high": "Hoch",
     "medium": "Mittel",
     "allergenCount": "{count} Allergene ausgewaehlt",
-    "saved": "Profil gespeichert"
+    "saved": "Profil gespeichert",
+    "categoryTop14": "EU-Pflichtallergene (Top 14)",
+    "categoryTop14Desc": "Deklarationspflichtig nach LMIV - werden als Gefahr (rot) eingestuft",
+    "categoryTop30": "Erweiterte Allergene (Top 30)",
+    "categoryTop30Desc": "Haeufige Unvertraeglichkeiten - werden als Warnung (gelb) eingestuft"
   },
   "result": {
     "disclaimer": "Diese App ist eine Entscheidungshilfe und ersetzt keine aerztliche Beratung. Pruefe im Zweifel immer die Verpackung selbst.",

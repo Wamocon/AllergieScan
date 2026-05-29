@@ -95,49 +95,112 @@ export default function ProfilePage() {
       <h1 className="text-2xl font-bold">{t('title')}</h1>
       <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">{t('subtitle')}</p>
 
-      <div className="mt-6 space-y-3">
-        {allergens.map((allergen) => {
-          const isSelected = selected.some((s) => s.allergen_id === allergen.id)
-          const entry = selected.find((s) => s.allergen_id === allergen.id)
+      <div className="mt-6 space-y-6">
+        {/* Top-14 EU Mandatory Allergens */}
+        <div>
+          <h2 className="text-lg font-semibold flex items-center gap-2">
+            <span className="inline-block h-3 w-3 rounded-full bg-red-500" />
+            {t('categoryTop14')}
+          </h2>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">{t('categoryTop14Desc')}</p>
+          <div className="mt-3 space-y-2">
+            {allergens.filter((a) => a.category === 'top14').map((allergen) => {
+              const isSelected = selected.some((s) => s.allergen_id === allergen.id)
+              const entry = selected.find((s) => s.allergen_id === allergen.id)
 
-          return (
-            <div
-              key={allergen.id}
-              className={`rounded-lg border p-3 transition-colors ${
-                isSelected
-                  ? 'border-zinc-900 bg-zinc-50 dark:border-zinc-100 dark:bg-zinc-900'
-                  : 'border-zinc-200 dark:border-zinc-800'
-              }`}
-            >
-              <div className="flex items-center justify-between">
-                <label className="flex cursor-pointer items-center gap-3">
-                  <input
-                    type="checkbox"
-                    checked={isSelected}
-                    onChange={() => toggleAllergen(allergen)}
-                    className="h-4 w-4 rounded"
-                  />
-                  <span className="font-medium">{allergen.name_de}</span>
-                  <span className="text-xs text-zinc-500">({allergen.name_en})</span>
-                </label>
+              return (
+                <div
+                  key={allergen.id}
+                  className={`rounded-lg border p-3 transition-colors ${
+                    isSelected
+                      ? 'border-red-400 bg-red-50 dark:border-red-600 dark:bg-red-950'
+                      : 'border-zinc-200 dark:border-zinc-800'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <label className="flex cursor-pointer items-center gap-3">
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => toggleAllergen(allergen)}
+                        className="h-4 w-4 rounded"
+                      />
+                      <span className="font-medium">{allergen.name_de}</span>
+                      <span className="text-xs text-zinc-500">({allergen.name_en})</span>
+                    </label>
 
-                {isSelected && (
-                  <select
-                    value={entry?.risk_level || 'high'}
-                    onChange={(e) =>
-                      setRiskLevel(allergen.id, e.target.value as ProfileAllergen['risk_level'])
-                    }
-                    className="rounded border border-zinc-300 px-2 py-1 text-xs dark:border-zinc-700 dark:bg-zinc-900"
-                  >
-                    <option value="critical">{t('critical')}</option>
-                    <option value="high">{t('high')}</option>
-                    <option value="medium">{t('medium')}</option>
-                  </select>
-                )}
-              </div>
-            </div>
-          )
-        })}
+                    {isSelected && (
+                      <select
+                        value={entry?.risk_level || 'high'}
+                        onChange={(e) =>
+                          setRiskLevel(allergen.id, e.target.value as ProfileAllergen['risk_level'])
+                        }
+                        className="rounded border border-zinc-300 px-2 py-1 text-xs dark:border-zinc-700 dark:bg-zinc-900"
+                      >
+                        <option value="critical">{t('critical')}</option>
+                        <option value="high">{t('high')}</option>
+                        <option value="medium">{t('medium')}</option>
+                      </select>
+                    )}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* Top-30 Extended Allergens */}
+        <div>
+          <h2 className="text-lg font-semibold flex items-center gap-2">
+            <span className="inline-block h-3 w-3 rounded-full bg-yellow-500" />
+            {t('categoryTop30')}
+          </h2>
+          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">{t('categoryTop30Desc')}</p>
+          <div className="mt-3 space-y-2">
+            {allergens.filter((a) => a.category === 'top30').map((allergen) => {
+              const isSelected = selected.some((s) => s.allergen_id === allergen.id)
+              const entry = selected.find((s) => s.allergen_id === allergen.id)
+
+              return (
+                <div
+                  key={allergen.id}
+                  className={`rounded-lg border p-3 transition-colors ${
+                    isSelected
+                      ? 'border-yellow-400 bg-yellow-50 dark:border-yellow-600 dark:bg-yellow-950'
+                      : 'border-zinc-200 dark:border-zinc-800'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <label className="flex cursor-pointer items-center gap-3">
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => toggleAllergen(allergen)}
+                        className="h-4 w-4 rounded"
+                      />
+                      <span className="font-medium">{allergen.name_de}</span>
+                      <span className="text-xs text-zinc-500">({allergen.name_en})</span>
+                    </label>
+
+                    {isSelected && (
+                      <select
+                        value={entry?.risk_level || 'high'}
+                        onChange={(e) =>
+                          setRiskLevel(allergen.id, e.target.value as ProfileAllergen['risk_level'])
+                        }
+                        className="rounded border border-zinc-300 px-2 py-1 text-xs dark:border-zinc-700 dark:bg-zinc-900"
+                      >
+                        <option value="critical">{t('critical')}</option>
+                        <option value="high">{t('high')}</option>
+                        <option value="medium">{t('medium')}</option>
+                      </select>
+                    )}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
       </div>
 
       <div className="mt-6 flex items-center gap-4">

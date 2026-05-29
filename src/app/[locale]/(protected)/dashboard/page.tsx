@@ -105,12 +105,22 @@ export default function DashboardPage() {
                 <h3 className="font-medium">{t('matchedAllergens')}:</h3>
                 <ul className="mt-1 space-y-1">
                   {result.matched_allergens.map((hit, i) => (
-                    <li key={i} className="text-sm">
-                      <span className="font-medium">{hit.allergen_name_de}</span>
-                      {' '}&mdash;{' '}
-                      {hit.matched_terms.join(', ')}
-                      <span className="ml-2 text-xs opacity-70">
-                        ({hit.confidence}, {hit.risk_level})
+                    <li key={i} className="text-sm flex items-start gap-2">
+                      <span className={`inline-block mt-0.5 h-2.5 w-2.5 shrink-0 rounded-full ${
+                        hit.category === 'top14'
+                          ? 'bg-red-500'
+                          : 'bg-yellow-500'
+                      }`} />
+                      <span>
+                        <span className="font-medium">{hit.allergen_name_de}</span>
+                        <span className="ml-1 text-xs opacity-60">
+                          ({hit.category === 'top14' ? t('categoryTop14') : t('categoryTop30')})
+                        </span>
+                        {' '}&mdash;{' '}
+                        {hit.matched_terms.join(', ')}
+                        <span className="ml-2 text-xs opacity-70">
+                          ({hit.confidence}, {hit.risk_level})
+                        </span>
                       </span>
                     </li>
                   ))}

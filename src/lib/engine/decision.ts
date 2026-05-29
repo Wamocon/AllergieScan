@@ -1,4 +1,5 @@
 import type {
+  AllergenCategory,
   AllergenHit,
   Confidence,
   IngredientMatch,
@@ -13,15 +14,20 @@ interface AllergenInfo {
   code: string
   name_de: string
   name_en: string
+  category: AllergenCategory
 }
 
 /**
  * Calculates the scan decision based on matches and user profile.
  *
- * Decision logic:
- * - DANGER: definite match on critical/high allergen
- * - WARNING: probable/possible match, OR medium risk allergen, OR unknown tokens present
+ * Decision logic (two-tier model):
+ * - DANGER: Top-14 definite match on critical/high allergen (hard decision per LMIV)
+ * - WARNING: Top-30 hit (extended risk), probable/possible match, medium risk, or unknown tokens
  * - SAFE: no matches on user allergens, all tokens identified, no uncertainty
+ *
+ * Key distinction:
+ * - Top-14 allergens (EU mandatory) can trigger DANGER (red)
+ * - Top-30 allergens (extended) max out at WARNING (yellow) - clearly labeled as extended risk
  *
  * Conservative policy: unknown ingredients = minimum WARNING, never SAFE.
  */
@@ -79,6 +85,7 @@ function groupByAllergen(
         allergen_code: info.code,
         allergen_name_de: info.name_de,
         allergen_name_en: info.name_en,
+        category: info.category,
         matched_terms: [match.token],
         confidence: match.confidence,
         risk_level: profileEntry.risk_level,
@@ -101,31 +108,39 @@ function determineResult(
   // No tokens at all = cannot determine = warning
   if (totalTokens === 0) return 'warning'
 
-  // Check for definite hits on critical/high allergens
-  const hasDangerHit = allergenHits.some(
-    (hit) =>
-      hit.confidence === 'definite' &&
-      (hit.risk_level === 'critical' || hit.risk_level === 'high')
-  )
-  if (hasDangerHit) return 'danger'
+  // Separate hits by category
+  const top14Hits = allergenHits.filter((hit) => hit.category === 'top14')
+  const top30Hits = allergenHits.filter((hit) => hit.category === 'top30')
 
-  // Check for any allergen hit (even medium or probable)
-  if (allergenHits.length > 0) {
-    // Probable/possible on critical = danger (conservative policy)
-    const hasProbableCritical = allergenHits.some(
+  // TOP-14: Hard decision logic (LMIV mandatory allergens)
+  if (top14Hits.length > 0) {
+    // Definite match on critical/high Top-14 allergen = DANGER
+    const hasDangerHit = top14Hits.some(
+      (hit) =>
+        hit.confidence === 'definite' &&
+        (hit.risk_level === 'critical' || hit.risk_level === 'high')
+    )
+    if (hasDangerHit) return 'danger'
+
+    // Probable on critical Top-14 = still DANGER (conservative)
+    const hasProbableCritical = top14Hits.some(
       (hit) => hit.risk_level === 'critical' && hit.confidence !== 'possible'
     )
     if (hasProbableCritical) return 'danger'
 
+    // Any other Top-14 hit = at minimum WARNING
+    return 'warning'
+  }
+
+  // TOP-30: Extended risk layer (max outcome = WARNING, never DANGER)
+  if (top30Hits.length > 0) {
     return 'warning'
   }
 
   // Unknown tokens present = conservative warning
   if (unknownTokens.length > 0) {
-    // If more than 30% of tokens are unknown, it's a stronger warning
     const unknownRatio = unknownTokens.length / totalTokens
     if (unknownRatio > 0.5) return 'warning'
-    // Some unknown but no matches - still warning (conservative)
     return 'warning'
   }
 
