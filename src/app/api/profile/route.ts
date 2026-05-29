@@ -31,7 +31,7 @@ export async function PUT(request: Request) {
   }
 
   const body = await request.json()
-  const { allergen_config, display_name, language, theme } = body
+  const { allergen_config, display_name, language, theme, birth_year } = body
 
   // Validate allergen_config structure
   if (allergen_config !== undefined) {
@@ -64,6 +64,7 @@ export async function PUT(request: Request) {
   if (display_name !== undefined) updateData.display_name = display_name
   if (language !== undefined) updateData.language = language
   if (theme !== undefined) updateData.theme = theme
+  if (birth_year !== undefined) updateData.birth_year = birth_year === null ? null : Number(birth_year)
 
   const { data: profile, error } = await supabase
     .from('user_profiles')

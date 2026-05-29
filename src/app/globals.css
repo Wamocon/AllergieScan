@@ -2,31 +2,106 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* ------------------------------------------------------------------ */
+/* Calm Safety - Light tokens                                          */
+/* ------------------------------------------------------------------ */
+:root {
+  --brand: #1a4d3a;
+  --brand-hover: #0f3d2e;
+  --brand-tint: #e8f0eb;
+  --brand-on: #ffffff;
+
+  --canvas: #f5f0e8;
+  --canvas-raised: #fbf8f2;
+  --surface: #ffffff;
+  --surface-overlay: rgba(255, 255, 255, 0.85);
+
+  --border: #e8e0d0;
+  --border-strong: #d4c8b0;
+
+  --text: #1a1a1a;
+  --text-secondary: #4a4a4a;
+  --text-muted: #8a8275;
+
+  --safe: #2d8659;
+  --safe-tint: #e3f1e9;
+  --safe-text: #1a4d3a;
+  --warning: #c08810;
+  --warning-tint: #faf0d8;
+  --warning-text: #7a5408;
+  --danger: #b3380e;
+  --danger-tint: #f7e1d4;
+  --danger-text: #7a2608;
+
+  --shadow-brand: 0 4px 14px rgba(26, 77, 58, 0.25);
+  --shadow-soft: 0 1px 2px rgba(26, 77, 58, 0.04);
+
+  --grain-color: rgba(26, 77, 58, 0.05);
+}
+
+/* ------------------------------------------------------------------ */
+/* Calm Safety - Dark tokens (forest-tinged charcoal)                  */
+/* ------------------------------------------------------------------ */
+.dark {
+  --brand: #5fb893;
+  --brand-hover: #7ac9a8;
+  --brand-tint: #14241e;
+  --brand-on: #0a1410;
+
+  --canvas: #0d1411;
+  --canvas-raised: #131c17;
+  --surface: #18221c;
+  --surface-overlay: rgba(13, 20, 17, 0.85);
+
+  --border: #26332b;
+  --border-strong: #364a3d;
+
+  --text: #ecebe3;
+  --text-secondary: #b9b8ac;
+  --text-muted: #7d8378;
+
+  --safe: #5fb893;
+  --safe-tint: #14241e;
+  --safe-text: #a3e1c2;
+  --warning: #e0a73c;
+  --warning-tint: #2a200d;
+  --warning-text: #f5cf78;
+  --danger: #e07346;
+  --danger-tint: #2a1410;
+  --danger-text: #f4a484;
+
+  --shadow-brand: 0 4px 18px rgba(95, 184, 147, 0.22);
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.5);
+
+  --grain-color: rgba(95, 184, 147, 0.06);
+}
+
 @theme inline {
-  /* Calm Safety palette - AllergieScan signature */
-  --color-brand: #1a4d3a;
-  --color-brand-hover: #0f3d2e;
-  --color-brand-tint: #e8f0eb;
-  --color-canvas: #f5f0e8;
-  --color-canvas-raised: #fbf8f2;
-  --color-surface: #ffffff;
-  --color-border: #e8e0d0;
-  --color-border-strong: #d4c8b0;
-  --color-text: #1a1a1a;
-  --color-text-secondary: #4a4a4a;
-  --color-text-muted: #8a8275;
-  --color-safe: #2d8659;
-  --color-safe-tint: #e3f1e9;
-  --color-warning: #c08810;
-  --color-warning-tint: #faf0d8;
-  --color-danger: #b3380e;
-  --color-danger-tint: #f7e1d4;
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-brand-tint: var(--brand-tint);
+  --color-canvas: var(--canvas);
+  --color-canvas-raised: var(--canvas-raised);
+  --color-surface: var(--surface);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-text: var(--text);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-safe: var(--safe);
+  --color-safe-tint: var(--safe-tint);
+  --color-warning: var(--warning);
+  --color-warning-tint: var(--warning-tint);
+  --color-danger: var(--danger);
+  --color-danger-tint: var(--danger-tint);
   --font-sans: var(--font-geist-sans);
   --font-serif: var(--font-instrument-serif);
   --font-mono: var(--font-geist-mono);
 }
 
-/* Editorial serif helpers */
+/* ------------------------------------------------------------------ */
+/* Editorial serif helpers                                             */
+/* ------------------------------------------------------------------ */
 .font-serif {
   font-family: var(--font-instrument-serif), Georgia, serif;
   font-feature-settings: 'liga', 'kern';
@@ -39,41 +114,63 @@
   letter-spacing: -0.01em;
 }
 
-/* Animations */
-@keyframes fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
+/* ------------------------------------------------------------------ */
+/* Semantic utility classes (theme-aware via CSS vars)                 */
+/* ------------------------------------------------------------------ */
+.bg-canvas { background-color: var(--canvas); }
+.bg-canvas-raised { background-color: var(--canvas-raised); }
+.bg-surface { background-color: var(--surface); }
+.bg-surface-overlay { background-color: var(--surface-overlay); }
+.bg-brand { background-color: var(--brand); }
+.bg-brand-tint { background-color: var(--brand-tint); }
+.hover\:bg-brand-hover:hover { background-color: var(--brand-hover); }
+.hover\:bg-brand-tint:hover { background-color: var(--brand-tint); }
+
+.text-app { color: var(--text); }
+.text-app-secondary { color: var(--text-secondary); }
+.text-app-muted { color: var(--text-muted); }
+.text-brand { color: var(--brand); }
+.text-on-brand { color: var(--brand-on); }
+.hover\:text-brand:hover { color: var(--brand); }
+
+.border-app { border-color: var(--border); }
+.border-app-strong { border-color: var(--border-strong); }
+.border-brand { border-color: var(--brand); }
+.hover\:border-app-strong:hover { border-color: var(--border-strong); }
+.hover\:border-brand:hover { border-color: var(--brand); }
+.focus\:border-brand:focus { border-color: var(--brand); }
+
+.bg-safe { background-color: var(--safe); }
+.bg-safe-tint { background-color: var(--safe-tint); }
+.text-safe { color: var(--safe-text); }
+.bg-warning { background-color: var(--warning); }
+.bg-warning-tint { background-color: var(--warning-tint); }
+.text-warning { color: var(--warning-text); }
+.bg-danger { background-color: var(--danger); }
+.bg-danger-tint { background-color: var(--danger-tint); }
+.text-danger { color: var(--danger-text); }
+
+.shadow-brand { box-shadow: var(--shadow-brand); }
+.shadow-soft { box-shadow: var(--shadow-soft); }
+
+.bg-canvas-grain {
+  background-color: var(--canvas);
+  background-image: radial-gradient(circle at 1px 1px, var(--grain-color) 1px, transparent 0);
+  background-size: 22px 22px;
 }
 
-@keyframes zoom-in {
-  from { opacity: 0; transform: scale(0.8); }
-  to { opacity: 1; transform: scale(1); }
-}
+.divide-app > * + * { border-color: var(--border); }
 
-@keyframes slide-up {
-  from { opacity: 0; transform: translateY(16px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes breathe {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.05); opacity: 0.92; }
-}
-
-@keyframes pulse-ring {
-  0% { transform: scale(0.85); opacity: 0.55; }
-  100% { transform: scale(1.7); opacity: 0; }
-}
-
-@keyframes drift {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-6px); }
-}
-
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
+/* ------------------------------------------------------------------ */
+/* Animations                                                          */
+/* ------------------------------------------------------------------ */
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes zoom-in { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+@keyframes slide-up { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes breathe { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.05); opacity: 0.92; } }
+@keyframes pulse-ring { 0% { transform: scale(0.85); opacity: 0.55; } 100% { transform: scale(1.7); opacity: 0; } }
+@keyframes drift { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-6px); } }
+@keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
 
 .animate-in { animation-fill-mode: both; }
 .fade-in { animation-name: fade-in; }
@@ -83,20 +180,22 @@
 .animate-pulse-ring { animation: pulse-ring 2.4s ease-out infinite; }
 .animate-drift { animation: drift 6s ease-in-out infinite; }
 
-/* Canvas backgrounds */
-.bg-canvas { background-color: var(--color-canvas); }
-.bg-canvas-raised { background-color: var(--color-canvas-raised); }
-
-.bg-canvas-grain {
-  background-color: var(--color-canvas);
-  background-image:
-    radial-gradient(circle at 1px 1px, rgba(26, 77, 58, 0.05) 1px, transparent 0);
-  background-size: 22px 22px;
-}
-
-/* Focus rings */
+/* ------------------------------------------------------------------ */
+/* Focus rings                                                         */
+/* ------------------------------------------------------------------ */
 *:focus-visible {
-  outline: 2px solid var(--color-brand);
+  outline: 2px solid var(--brand);
   outline-offset: 2px;
   border-radius: 6px;
+}
+
+/* ------------------------------------------------------------------ */
+/* Form element defaults in dark mode                                  */
+/* ------------------------------------------------------------------ */
+.dark input::placeholder,
+.dark textarea::placeholder { color: var(--text-muted); }
+
+select option {
+  background-color: var(--surface);
+  color: var(--text);
 }

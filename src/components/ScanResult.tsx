@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import type { ScanDecision } from '@/lib/engine/types'
 
@@ -11,165 +12,156 @@ interface Product {
   ingredients_text: string
 }
 
-interface ScanResultProps {
+interface Props {
   result: ScanDecision
   product: Product | null
   onDismiss: () => void
 }
 
-export function ScanResult({ result, product, onDismiss }: ScanResultProps) {
+type Signal = 'safe' | 'warning' | 'danger'
+
+const CONFIG: Record<Signal, {
+  iconBg: string
+  ringBg: string
+  detailBg: string
+  detailBorder: string
+  detailHeading: string
+  labelKey: string
+  icon: React.ReactNode
+}> = {
+  safe: {
+    iconBg: 'bg-safe',
+    ringBg: 'bg-safe/30',
+    detailBg: 'bg-safe-tint',
+    detailBorder: 'border-safe/30',
+    detailHeading: 'text-safe',
+    labelKey: 'resultSafe',
+    icon: (
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="20 6 9 17 4 12" />
+      </svg>
+    ),
+  },
+  warning: {
+    iconBg: 'bg-warning',
+    ringBg: 'bg-warning/30',
+    detailBg: 'bg-warning-tint',
+    detailBorder: 'border-warning/30',
+    detailHeading: 'text-warning',
+    labelKey: 'resultWarning',
+    icon: (
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+        <line x1="12" y1="9" x2="12" y2="13" />
+        <line x1="12" y1="17" x2="12.01" y2="17" />
+      </svg>
+    ),
+  },
+  danger: {
+    iconBg: 'bg-danger',
+    ringBg: 'bg-danger/30',
+    detailBg: 'bg-danger-tint',
+    detailBorder: 'border-danger/30',
+    detailHeading: 'text-danger',
+    labelKey: 'resultDanger',
+    icon: (
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18" />
+        <line x1="6" y1="6" x2="18" y2="18" />
+      </svg>
+    ),
+  },
+}
+
+export function ScanResult({ result, product, onDismiss }: Props) {
   const t = useTranslations('scan')
   const tr = useTranslations('result')
 
-  const config = {
-    safe: {
-      bg: 'bg-[#2d8659]',
-      ring: 'bg-[#2d8659]/30',
-      icon: <CheckIcon />,
-      label: t('resultSafe'),
-      detail: 'bg-[#e3f1e9] border-[#bcdcc8]',
-      heading: 'text-[#1a4d3a]',
-    },
-    warning: {
-      bg: 'bg-[#c08810]',
-      ring: 'bg-[#c08810]/30',
-      icon: <WarningIcon />,
-      label: t('resultWarning'),
-      detail: 'bg-[#faf0d8] border-[#e8d49a]',
-      heading: 'text-[#7a5408]',
-    },
-    danger: {
-      bg: 'bg-[#b3380e]',
-      ring: 'bg-[#b3380e]/30',
-      icon: <DangerIcon />,
-      label: t('resultDanger'),
-      detail: 'bg-[#f7e1d4] border-[#e8b89a]',
-      heading: 'text-[#7a2608]',
-    },
-  }
+  const signal: Signal = result.result
+  const c = CONFIG[signal]
 
-  const current = config[result.result]
+  useEffect(() => {
+    document.body.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = '' }
+  }, [])
 
   return (
-    <div className="fixed inset-0 z-[100] flex flex-col bg-[#f5f0e8] animate-in fade-in duration-200">
-      {/* Signal Header */}
-      <div className={`relative flex flex-col items-center justify-center overflow-hidden px-6 pb-10 pt-14 text-white ${current.bg}`}>
-        <div className="relative flex h-24 w-24 items-center justify-center">
-          <div className={`absolute inset-0 rounded-full ${current.ring} animate-pulse-ring`} />
-          <div className={`absolute inset-2 rounded-full ${current.ring} animate-pulse-ring`} style={{ animationDelay: '0.6s' }} />
-          <div className="relative flex h-20 w-20 items-center justify-center rounded-full bg-white/15 backdrop-blur-sm animate-breathe">
-            {current.icon}
-          </div>
-        </div>
-        <h2 className="mt-6 font-serif text-[40px] leading-none">{current.label}</h2>
-        {product && (
-          <p className="mt-3 text-center text-sm font-medium opacity-95">
-            {product.name}{product.brand ? ` \u00b7 ${product.brand}` : ''}
-          </p>
-        )}
-        <p className="mt-1.5 text-xs uppercase tracking-[0.14em] opacity-75">
-          {result.matched_tokens}/{result.total_tokens} {t('tokensMatched')}
-        </p>
-      </div>
-
-      {/* Detail Sheet */}
-      <div className="flex-1 overflow-y-auto px-4 py-6">
-        <div className="mx-auto max-w-xl">
-          {/* Matched Allergens */}
-          {result.matched_allergens.length > 0 && (
-            <div className={`rounded-[24px] border p-5 ${current.detail}`}>
-              <h3 className={`text-[10px] font-medium uppercase tracking-[0.16em] ${current.heading}`}>
-                {t('matchedAllergens')}
-              </h3>
-              <ul className="mt-4 space-y-3">
-                {result.matched_allergens.map((hit, i) => (
-                  <li key={i} className="flex items-start gap-3 text-sm">
-                    <span className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${
-                      hit.category === 'top14' ? 'bg-[#b3380e]' : 'bg-[#c08810]'
-                    }`} />
-                    <div className="min-w-0 flex-1">
-                      <div className="flex flex-wrap items-baseline gap-1.5">
-                        <span className="font-medium text-[#1a1a1a]">
-                          {hit.allergen_name_de}
-                        </span>
-                        <span className="text-[10px] uppercase tracking-wider text-[#8a8275]">
-                          {hit.category === 'top14' ? t('categoryTop14') : t('categoryTop30')}
-                        </span>
-                      </div>
-                      <div className="mt-1 text-xs leading-relaxed text-[#4a4a4a]">
-                        {hit.matched_terms.join(', ')}
-                        <span className="ml-2 text-[#8a8275]">
-                          ({hit.confidence}, {hit.risk_level})
-                        </span>
-                      </div>
-                    </div>
-                  </li>
-                ))}
-              </ul>
+    <div className="fixed inset-0 z-[60] overflow-y-auto bg-canvas animate-in fade-in" style={{ animationDuration: '300ms' }}>
+      <div className="mx-auto flex min-h-screen max-w-2xl flex-col px-4 py-8 sm:py-12">
+        {/* Breathing signal icon */}
+        <div className="flex flex-col items-center pt-8">
+          <div className="relative flex h-24 w-24 items-center justify-center">
+            <div className={`absolute inset-0 rounded-full ${c.ringBg} animate-pulse-ring`} />
+            <div className={`absolute inset-2 rounded-full ${c.ringBg} animate-pulse-ring`} style={{ animationDelay: '0.6s' }} />
+            <div className={`relative flex h-20 w-20 items-center justify-center rounded-full ${c.iconBg} text-on-brand shadow-[0_8px_24px_rgba(0,0,0,0.18)] animate-breathe`}>
+              {c.icon}
             </div>
+          </div>
+
+          <h2 className="mt-8 font-serif text-[40px] leading-none text-app sm:text-[48px]">
+            {t(c.labelKey)}
+          </h2>
+          {product && (
+            <p className="mt-3 max-w-md text-center text-sm text-app-muted">
+              {product.name}{product.brand ? ` - ${product.brand}` : ''}
+            </p>
+          )}
+        </div>
+
+        {/* Detail card */}
+        <div className={`mt-10 rounded-[24px] border ${c.detailBorder} ${c.detailBg} p-6`}>
+          {result.matched_allergens && result.matched_allergens.length > 0 && (
+            <>
+              <p className={`text-[11px] font-medium uppercase tracking-[0.14em] ${c.detailHeading}`}>
+                {t('matchedAllergens')}
+              </p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {result.matched_allergens.map((a, i) => (
+                  <span key={i} className="inline-flex items-center gap-1.5 rounded-full bg-surface px-3 py-1.5 text-xs font-medium text-app shadow-soft">
+                    {a.allergen_name_de}
+                  </span>
+                ))}
+              </div>
+            </>
           )}
 
-          {/* Unknown Tokens */}
-          {result.unknown_tokens.length > 0 && (
-            <div className="mt-4 rounded-[24px] border border-[#e8e0d0] bg-[#fbf8f2] p-5">
-              <h3 className="text-[10px] font-medium uppercase tracking-[0.16em] text-[#8a8275]">
+          {result.unknown_tokens && result.unknown_tokens.length > 0 && (
+            <div className="mt-5">
+              <p className="text-[11px] font-medium uppercase tracking-[0.14em] text-app-muted">
                 {t('unknownIngredients')}
-              </h3>
-              <p className="mt-2 text-sm leading-relaxed text-[#4a4a4a]">
+              </p>
+              <p className="mt-2 text-xs leading-relaxed text-app-secondary">
                 {result.unknown_tokens.join(', ')}
               </p>
             </div>
           )}
 
-          {/* Disclaimer */}
-          <p className="mt-6 text-center text-xs italic text-[#8a8275]">
-            {tr('disclaimer')}
-          </p>
+          {result.total_tokens > 0 && (
+            <div className="mt-5 flex items-center justify-between text-xs text-app-muted">
+              <span>{t('tokensMatched')}</span>
+              <span className="font-medium text-app">{result.matched_tokens} / {result.total_tokens}</span>
+            </div>
+          )}
+        </div>
+
+        <p className="mx-auto mt-6 max-w-md text-center text-xs leading-relaxed text-app-muted">
+          {tr('disclaimer')}
+        </p>
+
+        {/* Dismiss CTA */}
+        <div className="mt-auto pt-10">
+          <button
+            onClick={onDismiss}
+            className="group inline-flex w-full items-center justify-center gap-2 rounded-full bg-brand px-6 py-3.5 text-sm font-medium text-on-brand shadow-brand transition-all hover:bg-brand-hover"
+          >
+            {t('scanAgain')}
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="transition-transform group-hover:translate-x-0.5">
+              <line x1="5" y1="12" x2="19" y2="12" />
+              <polyline points="12 5 19 12 12 19" />
+            </svg>
+          </button>
         </div>
       </div>
-
-      {/* Dismiss Button */}
-      <div className="border-t border-[#e8e0d0] bg-[#fbf8f2] p-4">
-        <button
-          onClick={onDismiss}
-          className="group inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#1a4d3a] px-4 py-3.5 text-sm font-medium text-white shadow-[0_4px_14px_rgba(26,77,58,0.25)] transition-all hover:bg-[#0f3d2e]"
-        >
-          {t('scanAgain')}
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="transition-transform group-hover:translate-x-0.5">
-            <line x1="5" y1="12" x2="19" y2="12" />
-            <polyline points="12 5 19 12 12 19" />
-          </svg>
-        </button>
-      </div>
     </div>
-  )
-}
-
-function CheckIcon() {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-      <polyline points="22 4 12 14.01 9 11.01" />
-    </svg>
-  )
-}
-
-function WarningIcon() {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
-      <line x1="12" y1="9" x2="12" y2="13" />
-      <line x1="12" y1="17" x2="12.01" y2="17" />
-    </svg>
-  )
-}
-
-function DangerIcon() {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="10" />
-      <line x1="15" y1="9" x2="9" y2="15" />
-      <line x1="9" y1="9" x2="15" y2="15" />
-    </svg>
   )
 }

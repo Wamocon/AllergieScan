@@ -60,7 +60,7 @@ export default async function LocaleLayout({
           }}
         />
       </head>
-      <body className="min-h-full bg-canvas-grain text-[#1a1a1a] dark:bg-zinc-950 dark:text-zinc-100">
+      <body className="min-h-full bg-canvas-grain text-app">
         <NextIntlClientProvider messages={messages}>
           <ThemeProvider>
             <AppTopBar />
