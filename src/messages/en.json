@@ -38,7 +38,9 @@
     "unknownIngredients": "Unknown ingredients",
     "matchedAllergens": "Detected allergens",
     "confidence": "Confidence",
-    "source": "Source"
+    "source": "Source",
+    "categoryTop14": "EU mandatory",
+    "categoryTop30": "Extended"
   },
   "profile": {
     "title": "Allergy profile",
@@ -48,7 +50,11 @@
     "high": "High",
     "medium": "Medium",
     "allergenCount": "{count} allergens selected",
-    "saved": "Profile saved"
+    "saved": "Profile saved",
+    "categoryTop14": "EU mandatory allergens (Top 14)",
+    "categoryTop14Desc": "Mandatory labeling per EU-FIC - classified as danger (red)",
+    "categoryTop30": "Extended allergens (Top 30)",
+    "categoryTop30Desc": "Common intolerances - classified as warning (yellow)"
   },
   "result": {
     "disclaimer": "This app is a decision aid and does not replace medical advice. When in doubt, always check the packaging yourself.",

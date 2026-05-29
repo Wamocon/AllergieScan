@@ -2,7 +2,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { calculateDecision } from './decision'
 import { matchIngredients } from './matcher'
 import { tokenizeIngredients } from './tokenize'
-import type { ScanDecision, UserAllergenConfig } from './types'
+import type { AllergenCategory, ScanDecision, UserAllergenConfig } from './types'
 
 /**
  * Main entry point: checks a product's ingredients against a user's allergy profile.
@@ -91,13 +91,14 @@ async function loadAllergenInfo() {
 
   const { data: allergens } = await supabase
     .from('allergens')
-    .select('id, code, name_de, name_en')
+    .select('id, code, name_de, name_en, category')
 
   return (allergens || []).map((a) => ({
     id: a.id,
     code: a.code,
     name_de: a.name_de,
     name_en: a.name_en,
+    category: (a.category || 'top14') as AllergenCategory,
   }))
 }
 
