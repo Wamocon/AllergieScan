@@ -5,7 +5,7 @@ import { updateSession } from '@/lib/supabase/middleware'
 
 const intlMiddleware = createMiddleware(routing)
 
-const protectedRoutes = ['/dashboard', '/profile']
+const protectedRoutes = ['/dashboard', '/profile', '/scan', '/history']
 
 export default async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl

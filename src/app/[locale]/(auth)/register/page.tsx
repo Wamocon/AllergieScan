@@ -141,8 +141,9 @@ export default function RegisterPage() {
         {step === 1 && (
           <StepShell eyebrow="01" title={t('wizardStep1Title')} subtitle={t('wizardStep1Sub')}>
             <div className="space-y-4">
-              <Field label={t('email')}>
+              <Field label={t('email')} id="reg-email">
                 <input
+                  id="reg-email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -151,8 +152,9 @@ export default function RegisterPage() {
                   className="block w-full rounded-2xl border border-app bg-canvas-raised px-4 py-3 text-sm text-app focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
                 />
               </Field>
-              <Field label={t('password')} hint={t('passwordHint')}>
+              <Field label={t('password')} hint={t('passwordHint')} id="reg-password">
                 <input
+                  id="reg-password"
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -168,8 +170,9 @@ export default function RegisterPage() {
         {step === 2 && (
           <StepShell eyebrow="02" title={t('wizardStep2Title')} subtitle={t('wizardStep2Sub')}>
             <div className="space-y-4">
-              <Field label={t('displayName')}>
+              <Field label={t('displayName')} id="reg-displayname">
                 <input
+                  id="reg-displayname"
                   type="text"
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
@@ -178,8 +181,9 @@ export default function RegisterPage() {
                   className="block w-full rounded-2xl border border-app bg-canvas-raised px-4 py-3 text-sm text-app placeholder:text-app-muted focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
                 />
               </Field>
-              <Field label={t('birthYear')} hint={t('birthYearHint')}>
+              <Field label={t('birthYear')} hint={t('birthYearHint')} id="reg-birthyear">
                 <input
+                  id="reg-birthyear"
                   type="number"
                   value={birthYear}
                   onChange={(e) => setBirthYear(e.target.value)}
@@ -274,10 +278,10 @@ function StepShell({
   )
 }
 
-function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
+function Field({ label, hint, children, id }: { label: string; hint?: string; children: React.ReactNode; id?: string }) {
   return (
     <div>
-      <label className="block text-[10px] font-medium uppercase tracking-[0.14em] text-app-muted">{label}</label>
+      <label htmlFor={id} className="block text-[10px] font-medium uppercase tracking-[0.14em] text-app-muted">{label}</label>
       <div className="mt-2">{children}</div>
       {hint && <p className="mt-1.5 text-xs text-app-muted">{hint}</p>}
     </div>

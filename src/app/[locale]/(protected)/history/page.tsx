@@ -55,7 +55,7 @@ export default function HistoryPage() {
         {t('title')}
       </div>
       <h1 className="mt-3 font-serif text-[34px] leading-[1.05] text-app sm:text-[42px]">
-        Dein <span className="font-serif-italic text-brand">Verlauf</span>.
+        {t('heading')} <span className="font-serif-italic text-brand">{t('headingHighlight')}</span>.
       </h1>
       <p className="mt-2 text-sm text-app-secondary">{t('subtitle')}</p>
 
@@ -67,7 +67,7 @@ export default function HistoryPage() {
               <polyline points="12 6 12 12 16 14" />
             </svg>
           </div>
-          <p className="mt-5 font-serif-italic text-xl text-app">Noch nichts gescannt.</p>
+          <p className="mt-5 font-serif-italic text-xl text-app">{t('emptyTitle')}</p>
           <p className="mt-1 text-sm text-app-muted">{t('empty')}</p>
         </div>
       ) : (

@@ -67,7 +67,8 @@ export default function DashboardPage() {
     )
   }
 
-  const greeting = greet()
+  const greetKey = greet()
+  const greeting = t(`greet${greetKey.charAt(0).toUpperCase() + greetKey.slice(1)}` as 'greetMorgen' | 'greetTag' | 'greetAbend')
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 lg:px-8 lg:py-12">
@@ -189,7 +190,7 @@ function StatCard({
 
 function greet(): string {
   const h = new Date().getHours()
-  if (h < 11) return 'Guten Morgen'
-  if (h < 17) return 'Hallo'
-  return 'Guten Abend'
+  if (h < 11) return 'morgen'
+  if (h < 17) return 'tag'
+  return 'abend'
 }

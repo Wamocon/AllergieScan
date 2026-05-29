@@ -17,10 +17,10 @@ export default function HomePage() {
       <section className="mt-10 grid gap-12 lg:grid-cols-[1.1fr_1fr] lg:gap-16">
         <div className="flex flex-col justify-center">
           <h1 className="text-[44px] leading-[1.02] tracking-[-0.025em] text-app sm:text-[60px] lg:text-[72px]">
-            <span className="font-sans font-light">Weiss,</span>{' '}
-            <span className="font-serif-italic text-brand">was drin ist.</span>
+            <span className="font-sans font-light">{th('heroTitle1')}</span>{' '}
+            <span className="font-serif-italic text-brand">{th('heroTitle2')}</span>
             <br />
-            <span className="font-sans font-light">Bevor du es isst.</span>
+            <span className="font-sans font-light">{th('heroTitle3')}</span>
           </h1>
           <p className="mt-7 max-w-md text-base leading-[1.65] text-app-secondary lg:text-lg">{th('hero')}</p>
           <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-5">
@@ -70,7 +70,7 @@ export default function HomePage() {
             <div>
               <div className="inline-flex items-center gap-2 rounded-full bg-canvas px-3 py-1 text-[10px] font-medium uppercase tracking-[0.14em] text-app-muted">
                 <span className="h-1.5 w-1.5 rounded-full bg-brand" />
-                Methode 01
+                {th('method')} 01
               </div>
               <h3 className="mt-5 font-serif text-[32px] leading-[1.05] text-app sm:text-[40px]">{th('feature2Title')}</h3>
               <p className="mt-4 max-w-md text-sm leading-relaxed text-app-secondary">{th('feature2Desc')}</p>
@@ -117,7 +117,7 @@ export default function HomePage() {
             {th('howTitle')}
             <span className="font-serif-italic text-brand">.</span>
           </h2>
-          <div className="hidden text-right text-xs uppercase tracking-[0.18em] text-app-muted sm:block">3 Schritte</div>
+          <div className="hidden text-right text-xs uppercase tracking-[0.18em] text-app-muted sm:block">{th('steps')}</div>
         </div>
 
         <div className="mt-12 grid gap-px overflow-hidden rounded-[28px] border border-app bg-app sm:grid-cols-3">
@@ -137,10 +137,10 @@ export default function HomePage() {
       {/* CTA */}
       <section className="mt-24 overflow-hidden rounded-[32px] bg-brand px-8 py-14 text-center sm:px-12 sm:py-20">
         <h2 className="font-serif text-[36px] leading-[1.05] text-on-brand sm:text-[48px]">
-          Einkaufen ohne <span className="font-serif-italic text-safe-tint">Sorge.</span>
+          {th('ctaTitle')} <span className="font-serif-italic text-safe-tint">{th('ctaTitleHighlight')}</span>
         </h2>
         <p className="mx-auto mt-5 max-w-md text-sm leading-relaxed text-on-brand/75">
-          Erstelle dein Allergieprofil in unter einer Minute. Kostenlos, ohne Werbung.
+          {th('ctaDesc')}
         </p>
         <Link
           href="/register"

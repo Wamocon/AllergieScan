@@ -83,7 +83,7 @@ export default function ScanPage() {
           {t('title')}
         </div>
         <h1 className="mt-3 font-serif text-[34px] leading-[1.05] text-app sm:text-[42px]">
-          Pruefe ein <span className="font-serif-italic text-brand">Produkt</span>.
+          {t('heading')} <span className="font-serif-italic text-brand">{t('headingHighlight')}</span>.
         </h1>
 
         <div className="mt-7 flex gap-1 rounded-full border border-app bg-canvas-raised p-1">

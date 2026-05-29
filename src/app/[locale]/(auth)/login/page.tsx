@@ -36,10 +36,12 @@ export default function LoginPage() {
       </Link>
 
       <div className="text-[11px] font-medium uppercase tracking-[0.18em] text-app-muted">
-        Willkommen zurueck
+        {t('loginWelcome')}
       </div>
       <h1 className="mt-2 font-serif text-[36px] leading-[1.05] text-app">
-        Bei <span className="font-serif-italic text-brand">AllergieScan</span> anmelden.
+        {t('loginHeading', { app: tc('appName') }).split(tc('appName'))[0]}
+        <span className="font-serif-italic text-brand">{tc('appName')}</span>
+        {t('loginHeading', { app: tc('appName') }).split(tc('appName'))[1]}
       </h1>
 
       <form onSubmit={handleLogin} className="mt-8 space-y-4">
