@@ -55,23 +55,26 @@ export function ProductSearch({ onProductSelect }: ProductSearchProps) {
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder={t('searchPlaceholder')}
-          className="flex-1 rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+          className="flex-1 rounded-2xl border border-[#e8e0d0] bg-[#fbf8f2] px-4 py-2.5 text-sm placeholder:text-[#8a8275] transition-colors focus:border-[#1a4d3a] focus:outline-none focus:ring-2 focus:ring-[#1a4d3a]/15"
         />
         <button
           onClick={handleSearch}
           disabled={loading || query.trim().length < 2}
-          className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
+          className="inline-flex items-center justify-center rounded-full bg-[#1a4d3a] px-5 py-2.5 text-sm font-medium text-white shadow-[0_4px_14px_rgba(26,77,58,0.25)] transition-all hover:bg-[#0f3d2e] disabled:opacity-50"
         >
           {t('searchButton')}
         </button>
       </div>
 
       {loading && (
-        <div className="text-sm text-zinc-500">{t('searching')}</div>
+        <div className="flex items-center gap-2 text-sm text-[#8a8275]">
+          <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-[#e8e0d0] border-t-[#1a4d3a]" />
+          {t('searching')}
+        </div>
       )}
 
       {searched && !loading && results.length === 0 && (
-        <div className="rounded-lg border border-zinc-200 p-3 text-sm text-zinc-500 dark:border-zinc-700">
+        <div className="rounded-2xl border border-[#e8e0d0] bg-[#fbf8f2] p-4 text-sm text-[#8a8275]">
           {t('noResults')}
         </div>
       )}
@@ -82,14 +85,14 @@ export function ProductSearch({ onProductSelect }: ProductSearchProps) {
             <li key={product.id || i}>
               <button
                 onClick={() => onProductSelect(product)}
-                className="w-full rounded-lg border border-zinc-200 p-3 text-left transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:hover:bg-zinc-800"
+                className="group w-full rounded-2xl border border-[#e8e0d0] bg-white p-4 text-left transition-all hover:border-[#1a4d3a] hover:bg-[#fbf8f2]"
               >
-                <div className="font-medium">{product.name}</div>
-                <div className="mt-0.5 text-xs text-zinc-500">
+                <div className="text-sm font-medium text-[#1a1a1a]">{product.name}</div>
+                <div className="mt-0.5 text-xs text-[#8a8275]">
                   {product.brand && <span>{product.brand} &middot; </span>}
                   <span>EAN: {product.ean}</span>
                 </div>
-                <div className="mt-1 line-clamp-2 text-xs text-zinc-400">
+                <div className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-[#4a4a4a]">
                   {product.ingredients_text}
                 </div>
               </button>

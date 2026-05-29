@@ -76,7 +76,8 @@
     "productFoundNoIngredients": "Product '{name}' found but no ingredient list available.",
     "lookupError": "Error looking up product.",
     "cameraPermissionDenied": "Camera access denied. Please allow access in your browser settings.",
-    "cameraError": "Could not start camera."
+    "cameraError": "Could not start camera.",
+    "scanAgain": "Scan again"
   },
   "profile": {
     "title": "Allergy profile",
