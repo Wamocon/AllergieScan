@@ -1,10 +1,11 @@
 import type { Metadata } from 'next'
 import { NextIntlClientProvider } from 'next-intl'
 import { getMessages } from 'next-intl/server'
-import { Geist, Geist_Mono } from 'next/font/google'
+import { Geist, Geist_Mono, Instrument_Serif } from 'next/font/google'
 import { notFound } from 'next/navigation'
 import { routing } from '@/i18n/routing'
-import { Header } from '@/components/Header'
+import { AppNavigation } from '@/components/AppNavigation'
+import { AppTopBar } from '@/components/AppTopBar'
 import { Footer } from '@/components/Footer'
 import { ThemeProvider } from '@/components/ThemeProvider'
 import '../globals.css'
@@ -16,6 +17,13 @@ const geistSans = Geist({
 
 const geistMono = Geist_Mono({
   variable: '--font-geist-mono',
+  subsets: ['latin'],
+})
+
+const instrumentSerif = Instrument_Serif({
+  variable: '--font-instrument-serif',
+  weight: '400',
+  style: ['normal', 'italic'],
   subsets: ['latin'],
 })
 
@@ -42,17 +50,27 @@ export default async function LocaleLayout({
   return (
     <html
       lang={locale}
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${instrumentSerif.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col bg-white text-zinc-900 dark:bg-zinc-950 dark:text-zinc-100">
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('theme');if(t==='dark'){document.documentElement.classList.add('dark')}else{document.documentElement.classList.remove('dark')}}catch(e){}})()`,
+          }}
+        />
+      </head>
+      <body className="min-h-full bg-canvas-grain text-[#1a1a1a] dark:bg-zinc-950 dark:text-zinc-100">
         <NextIntlClientProvider messages={messages}>
           <ThemeProvider>
-            <Header />
-            <main className="flex-1">
-              {children}
-            </main>
-            <Footer />
+            <AppTopBar />
+            <AppNavigation />
+            <div className="flex min-h-screen flex-col lg:pl-[240px]">
+              <main className="flex-1 pb-20 lg:pb-0">
+                {children}
+              </main>
+              <Footer />
+            </div>
           </ThemeProvider>
         </NextIntlClientProvider>
       </body>

@@ -76,7 +76,8 @@
     "productFoundNoIngredients": "Produkt '{name}' gefunden, aber keine Zutatenliste verfuegbar.",
     "lookupError": "Fehler bei der Produktsuche.",
     "cameraPermissionDenied": "Kamerazugriff verweigert. Bitte erlaube den Zugriff in den Browsereinstellungen.",
-    "cameraError": "Kamera konnte nicht gestartet werden."
+    "cameraError": "Kamera konnte nicht gestartet werden.",
+    "scanAgain": "Neuen Scan starten"
   },
   "profile": {
     "title": "Allergieprofil",

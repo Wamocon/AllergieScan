@@ -5,9 +5,10 @@ import { useTranslations } from 'next-intl'
 import { createClient } from '@/lib/supabase/client'
 import { ProductSearch } from '@/components/ProductSearch'
 import { BarcodeScanner } from '@/components/BarcodeScanner'
+import { ScanResult } from '@/components/ScanResult'
 import type { ScanDecision } from '@/lib/engine/types'
 
-type Tab = 'text' | 'search' | 'barcode'
+type Tab = 'search' | 'barcode' | 'text'
 
 interface Product {
   id?: string
@@ -19,7 +20,6 @@ interface Product {
 
 export default function DashboardPage() {
   const t = useTranslations('scan')
-  const tr = useTranslations('result')
   const [activeTab, setActiveTab] = useState<Tab>('search')
   const [ingredientsText, setIngredientsText] = useState('')
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
@@ -70,162 +70,175 @@ export default function DashboardPage() {
     setIngredientsText(product.ingredients_text)
     setResult(null)
     setError('')
-    // Auto-check immediately
     handleCheck(product.ingredients_text, product.id)
   }
 
-  const tabs: { key: Tab; label: string }[] = [
-    { key: 'search', label: t('tabSearch') },
-    { key: 'barcode', label: t('tabBarcode') },
-    { key: 'text', label: t('tabText') },
+  function handleDismissResult() {
+    setResult(null)
+    setSelectedProduct(null)
+  }
+
+  const tabs: { key: Tab; label: string; icon: React.ReactNode }[] = [
+    { key: 'search', label: t('tabSearch'), icon: <SearchTabIcon /> },
+    { key: 'barcode', label: t('tabBarcode'), icon: <BarcodeTabIcon /> },
+    { key: 'text', label: t('tabText'), icon: <TextTabIcon /> },
   ]
 
-  const resultColors = {
-    safe: 'border-green-500 bg-green-50 dark:bg-green-950',
-    warning: 'border-yellow-500 bg-yellow-50 dark:bg-yellow-950',
-    danger: 'border-red-500 bg-red-50 dark:bg-red-950',
-  }
-
-  const resultLabels = {
-    safe: t('resultSafe'),
-    warning: t('resultWarning'),
-    danger: t('resultDanger'),
-  }
-
   return (
-    <div className="mx-auto max-w-2xl px-4 py-8">
-      <h1 className="text-2xl font-bold">{t('title')}</h1>
+    <>
+      {/* Fullscreen Result Overlay */}
+      {result && (
+        <ScanResult
+          result={result}
+          product={selectedProduct}
+          onDismiss={handleDismissResult}
+        />
+      )}
 
-      {/* Tabs */}
-      <div className="mt-6 flex gap-1 rounded-lg border border-zinc-200 p-1 dark:border-zinc-700">
-        {tabs.map((tab) => (
-          <button
-            key={tab.key}
-            onClick={() => { setActiveTab(tab.key); setResult(null); setError(''); setSelectedProduct(null) }}
-            className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-              activeTab === tab.key
-                ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900'
-                : 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100'
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
+      <div className="mx-auto max-w-2xl px-4 py-8 lg:py-12">
+        {/* Page Title */}
+        <div className="flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.18em] text-[#8a8275]">
+          <span className="h-1.5 w-1.5 rounded-full bg-[#1a4d3a]" />
+          {t('title')}
+        </div>
+        <h1 className="mt-3 font-serif text-[34px] leading-[1.05] text-[#1a1a1a] sm:text-[42px]">
+          Pruefe ein <span className="font-serif-italic text-[#1a4d3a]">Produkt</span>.
+        </h1>
 
-      <div className="mt-4 space-y-4">
-        {/* Tab: Product Search */}
-        {activeTab === 'search' && (
-          <ProductSearch onProductSelect={handleProductSelect} />
-        )}
-
-        {/* Tab: Barcode Scanner */}
-        {activeTab === 'barcode' && (
-          <BarcodeScanner onProductFound={handleProductSelect} />
-        )}
-
-        {/* Tab: Manual Text Input */}
-        {activeTab === 'text' && (
-          <div className="space-y-4">
-            <div>
-              <label htmlFor="ingredients" className="block text-sm font-medium">
-                {t('inputLabel')}
-              </label>
-              <textarea
-                id="ingredients"
-                value={ingredientsText}
-                onChange={(e) => setIngredientsText(e.target.value)}
-                placeholder={t('inputPlaceholder')}
-                rows={4}
-                className="mt-1 block w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
-              />
-            </div>
-
+        {/* Tab Switcher - Pill style */}
+        <div className="mt-7 flex gap-1 rounded-full border border-[#e8e0d0] bg-[#fbf8f2] p-1">
+          {tabs.map((tab) => (
             <button
-              onClick={() => handleCheck()}
-              disabled={loading || !ingredientsText.trim()}
-              className="rounded-lg bg-zinc-900 px-6 py-2.5 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
+              key={tab.key}
+              onClick={() => { setActiveTab(tab.key); setResult(null); setError(''); setSelectedProduct(null) }}
+              className={`flex flex-1 items-center justify-center gap-2 rounded-full px-3 py-2.5 text-sm font-medium transition-all ${
+                activeTab === tab.key
+                  ? 'bg-[#1a4d3a] text-white shadow-[0_2px_8px_rgba(26,77,58,0.2)]'
+                  : 'text-[#4a4a4a] hover:text-[#1a4d3a]'
+              }`}
             >
-              {loading ? '...' : t('checkButton')}
+              {tab.icon}
+              <span className="hidden sm:inline">{tab.label}</span>
             </button>
-          </div>
-        )}
+          ))}
+        </div>
 
-        {/* Selected product info */}
-        {selectedProduct && (activeTab === 'search' || activeTab === 'barcode') && (
-          <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-3 dark:border-zinc-700 dark:bg-zinc-900">
-            <div className="text-sm font-medium">{selectedProduct.name}</div>
-            {selectedProduct.brand && (
-              <div className="text-xs text-zinc-500">{selectedProduct.brand}</div>
-            )}
-            <div className="mt-1 text-xs text-zinc-400 line-clamp-2">
-              {selectedProduct.ingredients_text}
+        {/* Tab Content */}
+        <div className="mt-5">
+          {activeTab === 'search' && (
+            <div className="rounded-[28px] border border-[#e8e0d0] bg-white p-5 shadow-[0_1px_2px_rgba(26,77,58,0.04)]">
+              <ProductSearch onProductSelect={handleProductSelect} />
+            </div>
+          )}
+
+          {activeTab === 'barcode' && (
+            <div className="rounded-[28px] border border-[#e8e0d0] bg-white p-5 shadow-[0_1px_2px_rgba(26,77,58,0.04)]">
+              <BarcodeScanner onProductFound={handleProductSelect} />
+            </div>
+          )}
+
+          {activeTab === 'text' && (
+            <div className="rounded-[28px] border border-[#e8e0d0] bg-white p-5 shadow-[0_1px_2px_rgba(26,77,58,0.04)]">
+              <div className="space-y-4">
+                <div>
+                  <label htmlFor="ingredients" className="block text-sm font-medium text-[#1a1a1a]">
+                    {t('inputLabel')}
+                  </label>
+                  <textarea
+                    id="ingredients"
+                    value={ingredientsText}
+                    onChange={(e) => setIngredientsText(e.target.value)}
+                    placeholder={t('inputPlaceholder')}
+                    rows={5}
+                    className="mt-2 block w-full rounded-2xl border border-[#e8e0d0] bg-[#fbf8f2] px-4 py-3 text-sm leading-relaxed transition-colors placeholder:text-[#8a8275] focus:border-[#1a4d3a] focus:outline-none focus:ring-2 focus:ring-[#1a4d3a]/15"
+                  />
+                </div>
+
+                <button
+                  onClick={() => handleCheck()}
+                  disabled={loading || !ingredientsText.trim()}
+                  className="group inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#1a4d3a] px-5 py-3 text-sm font-medium text-white shadow-[0_4px_14px_rgba(26,77,58,0.25)] transition-all hover:bg-[#0f3d2e] disabled:opacity-50"
+                >
+                  {loading ? t('checking') : t('checkButton')}
+                  {!loading && (
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="transition-transform group-hover:translate-x-0.5">
+                      <line x1="5" y1="12" x2="19" y2="12" />
+                      <polyline points="12 5 19 12 12 19" />
+                    </svg>
+                  )}
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Selected product card */}
+        {selectedProduct && !result && (activeTab === 'search' || activeTab === 'barcode') && (
+          <div className="mt-4 rounded-[28px] border border-[#e8e0d0] bg-white p-5">
+            <div className="flex items-start gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#e8f0eb] text-[#1a4d3a]">
+                <BarcodeTabIcon />
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="text-sm font-medium text-[#1a1a1a]">{selectedProduct.name}</div>
+                {selectedProduct.brand && (
+                  <div className="text-xs text-[#8a8275]">{selectedProduct.brand}</div>
+                )}
+                <div className="mt-2 line-clamp-2 text-xs leading-relaxed text-[#4a4a4a]">
+                  {selectedProduct.ingredients_text}
+                </div>
+              </div>
             </div>
           </div>
         )}
 
-        {/* Loading */}
+        {/* Loading spinner */}
         {loading && (
-          <div className="text-center text-sm text-zinc-500">{t('checking')}</div>
+          <div className="mt-6 flex items-center justify-center gap-2 text-sm text-[#8a8275]">
+            <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#e8e0d0] border-t-[#1a4d3a]" />
+            {t('checking')}
+          </div>
         )}
 
         {/* Error */}
         {error && (
-          <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800 dark:border-red-800 dark:bg-red-950 dark:text-red-200">
+          <div className="mt-4 rounded-2xl border border-[#f7e1d4] bg-[#fdf4ee] p-4 text-sm text-[#7a2608]">
             {error}
           </div>
         )}
-
-        {/* Result */}
-        {result && (
-          <div className={`rounded-lg border-2 p-4 ${resultColors[result.result]}`}>
-            <div className="text-lg font-bold">{resultLabels[result.result]}</div>
-
-            <div className="mt-2 text-sm">
-              {result.matched_tokens}/{result.total_tokens} {t('tokensMatched')}
-            </div>
-
-            {result.matched_allergens.length > 0 && (
-              <div className="mt-3">
-                <h3 className="font-medium">{t('matchedAllergens')}:</h3>
-                <ul className="mt-1 space-y-1">
-                  {result.matched_allergens.map((hit, i) => (
-                    <li key={i} className="text-sm flex items-start gap-2">
-                      <span className={`inline-block mt-0.5 h-2.5 w-2.5 shrink-0 rounded-full ${
-                        hit.category === 'top14'
-                          ? 'bg-red-500'
-                          : 'bg-yellow-500'
-                      }`} />
-                      <span>
-                        <span className="font-medium">{hit.allergen_name_de}</span>
-                        <span className="ml-1 text-xs opacity-60">
-                          ({hit.category === 'top14' ? t('categoryTop14') : t('categoryTop30')})
-                        </span>
-                        {' '}&mdash;{' '}
-                        {hit.matched_terms.join(', ')}
-                        <span className="ml-2 text-xs opacity-70">
-                          ({hit.confidence}, {hit.risk_level})
-                        </span>
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {result.unknown_tokens.length > 0 && (
-              <div className="mt-3">
-                <h3 className="font-medium">{t('unknownIngredients')}:</h3>
-                <p className="mt-1 text-sm opacity-70">
-                  {result.unknown_tokens.join(', ')}
-                </p>
-              </div>
-            )}
-
-            <p className="mt-4 text-xs italic opacity-60">{tr('disclaimer')}</p>
-          </div>
-        )}
       </div>
-    </div>
+    </>
+  )
+}
+
+function SearchTabIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="11" cy="11" r="8" />
+      <line x1="21" y1="21" x2="16.65" y2="16.65" />
+    </svg>
+  )
+}
+
+function BarcodeTabIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 7V5a2 2 0 0 1 2-2h2" />
+      <path d="M17 3h2a2 2 0 0 1 2 2v2" />
+      <path d="M21 17v2a2 2 0 0 1-2 2h-2" />
+      <path d="M7 21H5a2 2 0 0 1-2-2v-2" />
+      <line x1="7" y1="12" x2="17" y2="12" />
+    </svg>
+  )
+}
+
+function TextTabIcon() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+      <polyline points="14 2 14 8 20 8" />
+      <line x1="16" y1="13" x2="8" y2="13" />
+      <line x1="16" y1="17" x2="8" y2="17" />
+    </svg>
   )
 }

@@ -88,22 +88,57 @@ export default function ProfilePage() {
     setSaved(true)
   }
 
-  if (loading) return <div className="p-8">{tc('loading')}</div>
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-16">
+        <span className="h-5 w-5 animate-spin rounded-full border-2 border-[#e8e0d0] border-t-[#1a4d3a]" />
+      </div>
+    )
+  }
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-8">
-      <h1 className="text-2xl font-bold">{t('title')}</h1>
-      <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">{t('subtitle')}</p>
-
-      <div className="mt-6 space-y-6">
-        {/* Top-14 EU Mandatory Allergens */}
+    <div className="mx-auto max-w-3xl px-4 py-8 lg:py-12">
+      <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h2 className="text-lg font-semibold flex items-center gap-2">
-            <span className="inline-block h-3 w-3 rounded-full bg-red-500" />
-            {t('categoryTop14')}
-          </h2>
-          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">{t('categoryTop14Desc')}</p>
-          <div className="mt-3 space-y-2">
+          <div className="flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.18em] text-[#8a8275]">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#1a4d3a]" />
+            {t('title')}
+          </div>
+          <h1 className="mt-3 font-serif text-[34px] leading-[1.05] text-[#1a1a1a] sm:text-[42px]">
+            Dein <span className="font-serif-italic text-[#1a4d3a]">Profil</span>.
+          </h1>
+          <p className="mt-2 text-sm text-[#4a4a4a]">{t('subtitle')}</p>
+        </div>
+        <div className="flex items-center gap-3">
+          {saved && (
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-[#e3f1e9] px-3 py-1 text-xs font-medium text-[#1a4d3a]">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#2d8659]" />
+              {t('saved')}
+            </span>
+          )}
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            className="inline-flex items-center justify-center gap-2 rounded-full bg-[#1a4d3a] px-6 py-2.5 text-sm font-medium text-white shadow-[0_4px_14px_rgba(26,77,58,0.25)] transition-all hover:bg-[#0f3d2e] disabled:opacity-50"
+          >
+            {saving ? tc('loading') : tc('save')}
+          </button>
+        </div>
+      </div>
+
+      <p className="mt-4 text-xs text-[#8a8275]">
+        {t('allergenCount', { count: selected.length })}
+      </p>
+
+      <div className="mt-8 space-y-10">
+        {/* Top-14 EU Mandatory Allergens */}
+        <section>
+          <div className="flex items-center gap-2">
+            <span className="h-2.5 w-2.5 rounded-full bg-[#b3380e]" />
+            <h2 className="font-serif text-2xl text-[#1a1a1a]">{t('categoryTop14')}</h2>
+          </div>
+          <p className="mt-1 text-xs text-[#8a8275]">{t('categoryTop14Desc')}</p>
+          <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {allergens.filter((a) => a.category === 'top14').map((allergen) => {
               const isSelected = selected.some((s) => s.allergen_id === allergen.id)
               const entry = selected.find((s) => s.allergen_id === allergen.id)
@@ -111,52 +146,61 @@ export default function ProfilePage() {
               return (
                 <div
                   key={allergen.id}
-                  className={`rounded-lg border p-3 transition-colors ${
+                  className={`rounded-2xl border p-4 transition-all ${
                     isSelected
-                      ? 'border-red-400 bg-red-50 dark:border-red-600 dark:bg-red-950'
-                      : 'border-zinc-200 dark:border-zinc-800'
+                      ? 'border-[#e8b89a] bg-[#fdf4ee]'
+                      : 'border-[#e8e0d0] bg-white hover:border-[#d4c8b0]'
                   }`}
                 >
-                  <div className="flex items-center justify-between">
-                    <label className="flex cursor-pointer items-center gap-3">
-                      <input
-                        type="checkbox"
-                        checked={isSelected}
-                        onChange={() => toggleAllergen(allergen)}
-                        className="h-4 w-4 rounded"
-                      />
-                      <span className="font-medium">{allergen.name_de}</span>
-                      <span className="text-xs text-zinc-500">({allergen.name_en})</span>
-                    </label>
+                  <label className="flex cursor-pointer items-center gap-3">
+                    <button
+                      type="button"
+                      role="switch"
+                      aria-checked={isSelected}
+                      onClick={() => toggleAllergen(allergen)}
+                      className={`relative h-5 w-9 shrink-0 rounded-full transition-colors ${
+                        isSelected ? 'bg-[#b3380e]' : 'bg-[#e8e0d0]'
+                      }`}
+                    >
+                      <span className={`absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white transition-transform shadow-sm ${
+                        isSelected ? 'translate-x-4' : 'translate-x-0'
+                      }`} />
+                    </button>
+                    <div className="min-w-0">
+                      <span className="block text-sm font-medium truncate text-[#1a1a1a]">{allergen.name_de}</span>
+                      <span className="block text-xs text-[#8a8275] truncate">{allergen.name_en}</span>
+                    </div>
+                  </label>
 
-                    {isSelected && (
+                  {isSelected && (
+                    <div className="mt-3 pl-12">
                       <select
                         value={entry?.risk_level || 'high'}
                         onChange={(e) =>
                           setRiskLevel(allergen.id, e.target.value as ProfileAllergen['risk_level'])
                         }
-                        className="rounded border border-zinc-300 px-2 py-1 text-xs dark:border-zinc-700 dark:bg-zinc-900"
+                        className="w-full rounded-xl border border-[#e8e0d0] bg-white px-3 py-1.5 text-xs text-[#1a1a1a] focus:border-[#1a4d3a] focus:outline-none focus:ring-2 focus:ring-[#1a4d3a]/15"
                       >
                         <option value="critical">{t('critical')}</option>
                         <option value="high">{t('high')}</option>
                         <option value="medium">{t('medium')}</option>
                       </select>
-                    )}
-                  </div>
+                    </div>
+                  )}
                 </div>
               )
             })}
           </div>
-        </div>
+        </section>
 
         {/* Top-30 Extended Allergens */}
-        <div>
-          <h2 className="text-lg font-semibold flex items-center gap-2">
-            <span className="inline-block h-3 w-3 rounded-full bg-yellow-500" />
-            {t('categoryTop30')}
-          </h2>
-          <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">{t('categoryTop30Desc')}</p>
-          <div className="mt-3 space-y-2">
+        <section>
+          <div className="flex items-center gap-2">
+            <span className="h-2.5 w-2.5 rounded-full bg-[#c08810]" />
+            <h2 className="font-serif text-2xl text-[#1a1a1a]">{t('categoryTop30')}</h2>
+          </div>
+          <p className="mt-1 text-xs text-[#8a8275]">{t('categoryTop30Desc')}</p>
+          <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {allergens.filter((a) => a.category === 'top30').map((allergen) => {
               const isSelected = selected.some((s) => s.allergen_id === allergen.id)
               const entry = selected.find((s) => s.allergen_id === allergen.id)
@@ -164,61 +208,52 @@ export default function ProfilePage() {
               return (
                 <div
                   key={allergen.id}
-                  className={`rounded-lg border p-3 transition-colors ${
+                  className={`rounded-2xl border p-4 transition-all ${
                     isSelected
-                      ? 'border-yellow-400 bg-yellow-50 dark:border-yellow-600 dark:bg-yellow-950'
-                      : 'border-zinc-200 dark:border-zinc-800'
+                      ? 'border-[#e8d49a] bg-[#fcf6e4]'
+                      : 'border-[#e8e0d0] bg-white hover:border-[#d4c8b0]'
                   }`}
                 >
-                  <div className="flex items-center justify-between">
-                    <label className="flex cursor-pointer items-center gap-3">
-                      <input
-                        type="checkbox"
-                        checked={isSelected}
-                        onChange={() => toggleAllergen(allergen)}
-                        className="h-4 w-4 rounded"
-                      />
-                      <span className="font-medium">{allergen.name_de}</span>
-                      <span className="text-xs text-zinc-500">({allergen.name_en})</span>
-                    </label>
+                  <label className="flex cursor-pointer items-center gap-3">
+                    <button
+                      type="button"
+                      role="switch"
+                      aria-checked={isSelected}
+                      onClick={() => toggleAllergen(allergen)}
+                      className={`relative h-5 w-9 shrink-0 rounded-full transition-colors ${
+                        isSelected ? 'bg-[#c08810]' : 'bg-[#e8e0d0]'
+                      }`}
+                    >
+                      <span className={`absolute top-0.5 left-0.5 h-4 w-4 rounded-full bg-white transition-transform shadow-sm ${
+                        isSelected ? 'translate-x-4' : 'translate-x-0'
+                      }`} />
+                    </button>
+                    <div className="min-w-0">
+                      <span className="block text-sm font-medium truncate text-[#1a1a1a]">{allergen.name_de}</span>
+                      <span className="block text-xs text-[#8a8275] truncate">{allergen.name_en}</span>
+                    </div>
+                  </label>
 
-                    {isSelected && (
+                  {isSelected && (
+                    <div className="mt-3 pl-12">
                       <select
                         value={entry?.risk_level || 'high'}
                         onChange={(e) =>
                           setRiskLevel(allergen.id, e.target.value as ProfileAllergen['risk_level'])
                         }
-                        className="rounded border border-zinc-300 px-2 py-1 text-xs dark:border-zinc-700 dark:bg-zinc-900"
+                        className="w-full rounded-xl border border-[#e8e0d0] bg-white px-3 py-1.5 text-xs text-[#1a1a1a] focus:border-[#1a4d3a] focus:outline-none focus:ring-2 focus:ring-[#1a4d3a]/15"
                       >
                         <option value="critical">{t('critical')}</option>
                         <option value="high">{t('high')}</option>
                         <option value="medium">{t('medium')}</option>
                       </select>
-                    )}
-                  </div>
+                    </div>
+                  )}
                 </div>
               )
             })}
           </div>
-        </div>
-      </div>
-
-      <div className="mt-6 flex items-center gap-4">
-        <button
-          onClick={handleSave}
-          disabled={saving}
-          className="rounded-lg bg-zinc-900 px-6 py-2.5 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
-        >
-          {tc('save')}
-        </button>
-
-        {saved && (
-          <span className="text-sm text-green-600 dark:text-green-400">{t('saved')}</span>
-        )}
-
-        <span className="text-sm text-zinc-500">
-          {t('allergenCount', { count: selected.length })}
-        </span>
+        </section>
       </div>
     </div>
   )
