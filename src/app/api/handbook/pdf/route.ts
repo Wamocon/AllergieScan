@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
+import path from 'path'
 import PDFDocument from 'pdfkit'
 import { getHandbook } from '@/lib/handbook/content'
 
 export const runtime = 'nodejs'
+
+// pdfkit resolves AFM font data relative to cwd which may differ in dev/Turbopack.
+// Use process.cwd() which is always the project root at runtime in Next.js.
+const PDFKIT_AFM_DIR = path.resolve(process.cwd(), 'node_modules', 'pdfkit', 'js', 'data')
 
 /**
  * Renders the handbook as a real, structured PDF document
@@ -23,6 +28,11 @@ export async function GET(request: NextRequest) {
         Keywords: 'AllergieScan, Allergie, Handbuch, Manual',
       },
     })
+
+    // Register standard fonts with absolute paths so Turbopack/dev CWD issues are bypassed
+    doc.registerFont('Helvetica', path.join(PDFKIT_AFM_DIR, 'Helvetica.afm'))
+    doc.registerFont('Helvetica-Bold', path.join(PDFKIT_AFM_DIR, 'Helvetica-Bold.afm'))
+    doc.registerFont('Helvetica-Oblique', path.join(PDFKIT_AFM_DIR, 'Helvetica-Oblique.afm'))
 
     const chunks: Buffer[] = []
     doc.on('data', (c: Buffer) => chunks.push(c))
