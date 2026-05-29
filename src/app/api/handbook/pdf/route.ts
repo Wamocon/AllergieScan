@@ -1,149 +1,238 @@
 import { NextRequest, NextResponse } from 'next/server'
-import path from 'path'
-import PDFDocument from 'pdfkit'
+import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
 import { getHandbook } from '@/lib/handbook/content'
 
 export const runtime = 'nodejs'
 
-// pdfkit resolves AFM font data relative to cwd which may differ in dev/Turbopack.
-// Use process.cwd() which is always the project root at runtime in Next.js.
-const PDFKIT_AFM_DIR = path.resolve(process.cwd(), 'node_modules', 'pdfkit', 'js', 'data')
-
 /**
- * Renders the handbook as a real, structured PDF document
- * (not a print preview). Uses pdfkit for typography and layout.
+ * Renders the handbook as a real, structured PDF document using pdf-lib.
+ * Pure JS - no filesystem dependencies (works with Turbopack/Vercel).
  */
 export async function GET(request: NextRequest) {
   const locale = request.nextUrl.searchParams.get('locale') === 'en' ? 'en' : 'de'
   const handbook = getHandbook(locale)
 
-  const pdfBuffer: Buffer = await new Promise((resolve, reject) => {
-    const doc = new PDFDocument({
-      size: 'A4',
-      margin: 64,
-      info: {
-        Title: handbook.title,
-        Author: 'WAMOCON GmbH',
-        Subject: handbook.subtitle,
-        Keywords: 'AllergieScan, Allergie, Handbuch, Manual',
-      },
+  const pdfDoc = await PDFDocument.create()
+  pdfDoc.setTitle(handbook.title)
+  pdfDoc.setAuthor('WAMOCON GmbH')
+  pdfDoc.setSubject(handbook.subtitle)
+  pdfDoc.setKeywords(['AllergieScan', 'Allergie', 'Handbuch', 'Manual'])
+
+  const helvetica = await pdfDoc.embedFont(StandardFonts.Helvetica)
+  const helveticaBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold)
+  const helveticaOblique = await pdfDoc.embedFont(StandardFonts.HelveticaOblique)
+
+  const brand = rgb(26 / 255, 77 / 255, 58 / 255)
+  const textColor = rgb(26 / 255, 26 / 255, 26 / 255)
+  const muted = rgb(125 / 255, 117 / 255, 105 / 255)
+  const borderColor = rgb(212 / 255, 200 / 255, 176 / 255)
+
+  const PAGE_W = 595.28 // A4
+  const PAGE_H = 841.89
+  const MARGIN = 64
+  const CONTENT_W = PAGE_W - 2 * MARGIN
+
+  // Helper: add footer to a page
+  function addFooter(page: ReturnType<typeof pdfDoc.addPage>, pageNum: number, totalPages: number) {
+    page.drawText(`AllergieScan - ${handbook.title}`, {
+      x: MARGIN,
+      y: 30,
+      size: 8,
+      font: helvetica,
+      color: muted,
     })
-
-    // Register standard fonts with absolute paths so Turbopack/dev CWD issues are bypassed
-    doc.registerFont('Helvetica', path.join(PDFKIT_AFM_DIR, 'Helvetica.afm'))
-    doc.registerFont('Helvetica-Bold', path.join(PDFKIT_AFM_DIR, 'Helvetica-Bold.afm'))
-    doc.registerFont('Helvetica-Oblique', path.join(PDFKIT_AFM_DIR, 'Helvetica-Oblique.afm'))
-
-    const chunks: Buffer[] = []
-    doc.on('data', (c: Buffer) => chunks.push(c))
-    doc.on('end', () => resolve(Buffer.concat(chunks)))
-    doc.on('error', reject)
-
-    // brand colors
-    const brand = '#1a4d3a'
-    const text = '#1a1a1a'
-    const muted = '#7d7569'
-    const border = '#d4c8b0'
-
-    // ---- Cover ----
-    doc.fillColor(brand).fontSize(11).font('Helvetica-Bold').text('ALLERGIESCAN', { characterSpacing: 4 })
-    doc.moveDown(8)
-    doc.fillColor(text).fontSize(36).font('Helvetica').text(handbook.title, { lineGap: 6 })
-    doc.moveDown(0.5)
-    doc.fillColor(muted).fontSize(13).font('Helvetica-Oblique').text(handbook.subtitle)
-    doc.moveDown(8)
-    doc.fillColor(muted).fontSize(9).font('Helvetica').text(`Version ${handbook.version}`)
-    doc.fillColor(muted).fontSize(9).text(new Date().toLocaleDateString(locale === 'en' ? 'en-GB' : 'de-DE', { year: 'numeric', month: 'long' }))
-    doc.fillColor(muted).fontSize(9).text('WAMOCON GmbH, Eschborn')
-
-    // ---- TOC ----
-    doc.addPage()
-    doc.fillColor(brand).fontSize(10).font('Helvetica-Bold').text(locale === 'en' ? 'TABLE OF CONTENTS' : 'INHALT', { characterSpacing: 3 })
-    doc.moveDown(1.5)
-    handbook.sections.forEach((section, i) => {
-      const num = String(i + 1).padStart(2, '0')
-      doc.fillColor(text).fontSize(13).font('Helvetica')
-      doc.text(`${num}    ${section.title}`, { lineGap: 4 })
-      doc.fillColor(muted).fontSize(10).font('Helvetica-Oblique')
-      doc.text(`         ${section.intro}`, { lineGap: 10 })
+    const numText = `${pageNum} / ${totalPages}`
+    const numWidth = helvetica.widthOfTextAtSize(numText, 8)
+    page.drawText(numText, {
+      x: PAGE_W - MARGIN - numWidth,
+      y: 30,
+      size: 8,
+      font: helvetica,
+      color: muted,
     })
+  }
 
-    // ---- Sections ----
-    handbook.sections.forEach((section, i) => {
-      doc.addPage()
-      const num = String(i + 1).padStart(2, '0')
-      doc.fillColor(brand).fontSize(10).font('Helvetica-Bold').text(num, { characterSpacing: 3 })
-      doc.moveDown(0.4)
-      doc.fillColor(text).fontSize(26).font('Helvetica').text(section.title, { lineGap: 4 })
-      doc.fillColor(muted).fontSize(12).font('Helvetica-Oblique').text(section.intro)
-      doc.moveDown(1)
-
-      // separator line
-      const y = doc.y
-      doc.moveTo(64, y).lineTo(531, y).strokeColor(border).lineWidth(0.5).stroke()
-      doc.moveDown(1)
-
-      section.blocks.forEach((block) => {
-        switch (block.type) {
-          case 'h3':
-            doc.moveDown(0.6)
-            doc.fillColor(text).fontSize(14).font('Helvetica-Bold').text(block.text, { lineGap: 4 })
-            doc.moveDown(0.2)
-            break
-          case 'p':
-            doc.fillColor(text).fontSize(11).font('Helvetica').text(block.text, { align: 'left', lineGap: 4 })
-            doc.moveDown(0.6)
-            break
-          case 'ul':
-            block.items.forEach((item) => {
-              doc.fillColor(brand).fontSize(11).font('Helvetica').text('-  ', { continued: true })
-              doc.fillColor(text).text(item, { lineGap: 4 })
-            })
-            doc.moveDown(0.6)
-            break
-          case 'ol':
-            block.items.forEach((item, idx) => {
-              doc.fillColor(brand).fontSize(11).font('Helvetica-Bold').text(`${idx + 1}.  `, { continued: true })
-              doc.fillColor(text).font('Helvetica').text(item, { lineGap: 4 })
-            })
-            doc.moveDown(0.6)
-            break
-          case 'note': {
-            const startY = doc.y
-            doc.fillColor(brand).fontSize(10).font('Helvetica-Oblique').text(block.text, 80, startY + 6, {
-              width: 451,
-              lineGap: 3,
-            })
-            const endY = doc.y
-            doc.moveTo(72, startY + 4).lineTo(72, endY + 2).strokeColor(brand).lineWidth(2).stroke()
-            doc.moveDown(0.8)
-            break
-          }
-        }
-      })
-    })
-
-    // ---- Footer on each page ----
-    const range = doc.bufferedPageRange()
-    for (let i = 0; i < range.count; i++) {
-      doc.switchToPage(i)
-      doc.fillColor(muted).fontSize(8).font('Helvetica').text(
-        `AllergieScan - ${handbook.title}`,
-        64,
-        doc.page.height - 40,
-        { width: 467, align: 'left' },
-      )
-      doc.text(`${i + 1} / ${range.count}`, 64, doc.page.height - 40, {
-        width: 467,
-        align: 'right',
-      })
+  // Helper: wrap text and return lines
+  function wrapText(text: string, font: typeof helvetica, size: number, maxWidth: number): string[] {
+    const words = text.split(' ')
+    const lines: string[] = []
+    let currentLine = ''
+    for (const word of words) {
+      const test = currentLine ? `${currentLine} ${word}` : word
+      if (font.widthOfTextAtSize(test, size) <= maxWidth) {
+        currentLine = test
+      } else {
+        if (currentLine) lines.push(currentLine)
+        currentLine = word
+      }
     }
+    if (currentLine) lines.push(currentLine)
+    return lines
+  }
 
-    doc.end()
+  // ---- Cover page ----
+  const cover = pdfDoc.addPage([PAGE_W, PAGE_H])
+  cover.drawText('ALLERGIESCAN', {
+    x: MARGIN,
+    y: PAGE_H - MARGIN - 12,
+    size: 11,
+    font: helveticaBold,
+    color: brand,
+  })
+  cover.drawText(handbook.title, {
+    x: MARGIN,
+    y: PAGE_H - 300,
+    size: 36,
+    font: helvetica,
+    color: textColor,
+  })
+  cover.drawText(handbook.subtitle, {
+    x: MARGIN,
+    y: PAGE_H - 340,
+    size: 13,
+    font: helveticaOblique,
+    color: muted,
+  })
+  const dateStr = new Date().toLocaleDateString(locale === 'en' ? 'en-GB' : 'de-DE', { year: 'numeric', month: 'long' })
+  cover.drawText(`Version ${handbook.version}`, { x: MARGIN, y: 100, size: 9, font: helvetica, color: muted })
+  cover.drawText(dateStr, { x: MARGIN, y: 86, size: 9, font: helvetica, color: muted })
+  cover.drawText('WAMOCON GmbH, Eschborn', { x: MARGIN, y: 72, size: 9, font: helvetica, color: muted })
+
+  // ---- TOC page ----
+  const tocPage = pdfDoc.addPage([PAGE_W, PAGE_H])
+  tocPage.drawText(locale === 'en' ? 'TABLE OF CONTENTS' : 'INHALT', {
+    x: MARGIN, y: PAGE_H - MARGIN - 12, size: 10, font: helveticaBold, color: brand,
+  })
+  let tocY = PAGE_H - MARGIN - 50
+  handbook.sections.forEach((section, i) => {
+    const num = String(i + 1).padStart(2, '0')
+    tocPage.drawText(`${num}    ${section.title}`, {
+      x: MARGIN, y: tocY, size: 13, font: helvetica, color: textColor,
+    })
+    tocY -= 18
+    const introLines = wrapText(section.intro, helveticaOblique, 10, CONTENT_W - 40)
+    for (const line of introLines) {
+      tocPage.drawText(`         ${line}`, {
+        x: MARGIN, y: tocY, size: 10, font: helveticaOblique, color: muted,
+      })
+      tocY -= 14
+    }
+    tocY -= 8
   })
 
+  // ---- Section pages ----
+  handbook.sections.forEach((section, i) => {
+    let page = pdfDoc.addPage([PAGE_W, PAGE_H])
+    let y = PAGE_H - MARGIN
+
+    const num = String(i + 1).padStart(2, '0')
+    page.drawText(num, { x: MARGIN, y, size: 10, font: helveticaBold, color: brand })
+    y -= 28
+    page.drawText(section.title, { x: MARGIN, y, size: 26, font: helvetica, color: textColor })
+    y -= 22
+
+    const introLines = wrapText(section.intro, helveticaOblique, 12, CONTENT_W)
+    for (const line of introLines) {
+      page.drawText(line, { x: MARGIN, y, size: 12, font: helveticaOblique, color: muted })
+      y -= 16
+    }
+    y -= 10
+
+    // Separator line
+    page.drawLine({
+      start: { x: MARGIN, y },
+      end: { x: PAGE_W - MARGIN, y },
+      thickness: 0.5,
+      color: borderColor,
+    })
+    y -= 20
+
+    // Render blocks
+    for (const block of section.blocks) {
+      // Check if we need a new page
+      if (y < 80) {
+        page = pdfDoc.addPage([PAGE_W, PAGE_H])
+        y = PAGE_H - MARGIN
+      }
+
+      switch (block.type) {
+        case 'h3': {
+          y -= 8
+          page.drawText(block.text, { x: MARGIN, y, size: 14, font: helveticaBold, color: textColor })
+          y -= 20
+          break
+        }
+        case 'p': {
+          const lines = wrapText(block.text, helvetica, 11, CONTENT_W)
+          for (const line of lines) {
+            if (y < 60) { page = pdfDoc.addPage([PAGE_W, PAGE_H]); y = PAGE_H - MARGIN }
+            page.drawText(line, { x: MARGIN, y, size: 11, font: helvetica, color: textColor })
+            y -= 16
+          }
+          y -= 8
+          break
+        }
+        case 'ul': {
+          for (const item of block.items) {
+            if (y < 60) { page = pdfDoc.addPage([PAGE_W, PAGE_H]); y = PAGE_H - MARGIN }
+            const lines = wrapText(item, helvetica, 11, CONTENT_W - 16)
+            page.drawText('-', { x: MARGIN, y, size: 11, font: helvetica, color: brand })
+            for (let li = 0; li < lines.length; li++) {
+              if (y < 60) { page = pdfDoc.addPage([PAGE_W, PAGE_H]); y = PAGE_H - MARGIN }
+              page.drawText(lines[li], { x: MARGIN + 16, y, size: 11, font: helvetica, color: textColor })
+              y -= 16
+            }
+          }
+          y -= 8
+          break
+        }
+        case 'ol': {
+          for (let idx = 0; idx < block.items.length; idx++) {
+            if (y < 60) { page = pdfDoc.addPage([PAGE_W, PAGE_H]); y = PAGE_H - MARGIN }
+            const lines = wrapText(block.items[idx], helvetica, 11, CONTENT_W - 20)
+            page.drawText(`${idx + 1}.`, { x: MARGIN, y, size: 11, font: helveticaBold, color: brand })
+            for (let li = 0; li < lines.length; li++) {
+              if (y < 60) { page = pdfDoc.addPage([PAGE_W, PAGE_H]); y = PAGE_H - MARGIN }
+              page.drawText(lines[li], { x: MARGIN + 20, y, size: 11, font: helvetica, color: textColor })
+              y -= 16
+            }
+          }
+          y -= 8
+          break
+        }
+        case 'note': {
+          const noteLines = wrapText(block.text, helveticaOblique, 10, CONTENT_W - 20)
+          const noteStartY = y
+          for (const line of noteLines) {
+            if (y < 60) { page = pdfDoc.addPage([PAGE_W, PAGE_H]); y = PAGE_H - MARGIN }
+            page.drawText(line, { x: MARGIN + 12, y, size: 10, font: helveticaOblique, color: brand })
+            y -= 14
+          }
+          // Side bar for the note
+          page.drawLine({
+            start: { x: MARGIN + 4, y: noteStartY + 4 },
+            end: { x: MARGIN + 4, y: y + 2 },
+            thickness: 2,
+            color: brand,
+          })
+          y -= 12
+          break
+        }
+      }
+    }
+  })
+
+  // ---- Add footers to all pages ----
+  const pages = pdfDoc.getPages()
+  const totalPages = pages.length
+  pages.forEach((page, idx) => {
+    addFooter(page, idx + 1, totalPages)
+  })
+
+  const pdfBytes = await pdfDoc.save()
   const filename = `allergiescan-handbuch-${locale}-v${handbook.version}.pdf`
-  return new NextResponse(new Uint8Array(pdfBuffer), {
+
+  return new NextResponse(Buffer.from(pdfBytes), {
     status: 200,
     headers: {
       'Content-Type': 'application/pdf',
