@@ -5,14 +5,31 @@
     "login": "Sign in",
     "register": "Sign up",
     "logout": "Sign out",
-    "dashboard": "Dashboard",
+    "dashboard": "Scan",
     "profile": "Profile",
+    "history": "History",
     "save": "Save",
     "cancel": "Cancel",
     "back": "Back",
     "loading": "Loading...",
     "error": "Error",
-    "success": "Success"
+    "success": "Success",
+    "impressum": "Imprint",
+    "datenschutz": "Privacy",
+    "agb": "Terms"
+  },
+  "home": {
+    "hero": "Scan products, check ingredients, and get instant alerts when an allergen is detected. Optimised for the DACH region.",
+    "feature1Title": "Product Search",
+    "feature1Desc": "Search by product name and check the ingredient list against your allergen profile.",
+    "feature2Title": "Barcode Scanner",
+    "feature2Desc": "Scan the barcode in the supermarket and get a rating in seconds.",
+    "feature3Title": "Personal Profile",
+    "feature3Desc": "Save your allergies and receive individual warnings.",
+    "howTitle": "How it works",
+    "step1": "Sign up and select your allergens.",
+    "step2": "Scan or search for a product.",
+    "step3": "Get an instant clear rating: safe, warning, or danger."
   },
   "auth": {
     "email": "Email address",
@@ -79,5 +96,13 @@
     "disclaimer": "This app is a decision aid and does not replace medical advice. When in doubt, always check the packaging yourself.",
     "dataTimestamp": "Data as of",
     "checkTimestamp": "Checked on"
+  },
+  "history": {
+    "title": "Scan History",
+    "subtitle": "Your last 50 scans",
+    "empty": "No scans yet. Scan a product to start building your history.",
+    "safe": "Safe",
+    "warning": "Warning",
+    "danger": "Danger"
   }
 }
