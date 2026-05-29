@@ -5,14 +5,31 @@
     "login": "Anmelden",
     "register": "Registrieren",
     "logout": "Abmelden",
-    "dashboard": "Dashboard",
+    "dashboard": "Scan",
     "profile": "Profil",
+    "history": "Verlauf",
     "save": "Speichern",
     "cancel": "Abbrechen",
     "back": "Zurueck",
     "loading": "Laden...",
     "error": "Fehler",
-    "success": "Erfolg"
+    "success": "Erfolg",
+    "impressum": "Impressum",
+    "datenschutz": "Datenschutz",
+    "agb": "AGB"
+  },
+  "home": {
+    "hero": "Scanne Produkte, pruefe Zutaten und erhalte sofort eine Warnung, wenn ein Allergen enthalten ist. Fuer die DACH-Region optimiert.",
+    "feature1Title": "Produktsuche",
+    "feature1Desc": "Suche nach Produktnamen und pruefe die Zutatenliste gegen dein Allergenprofil.",
+    "feature2Title": "Barcode-Scanner",
+    "feature2Desc": "Scanne den Barcode im Supermarkt und erhalte in Sekunden eine Bewertung.",
+    "feature3Title": "Persoenliches Profil",
+    "feature3Desc": "Hinterlege deine Allergien und erhalte individuelle Warnungen.",
+    "howTitle": "So funktioniert es",
+    "step1": "Registriere dich und waehle deine Allergene aus.",
+    "step2": "Scanne oder suche ein Produkt.",
+    "step3": "Erhalte sofort eine klare Bewertung: sicher, Warnung oder Gefahr."
   },
   "auth": {
     "email": "E-Mail-Adresse",
@@ -40,7 +57,26 @@
     "confidence": "Sicherheit",
     "source": "Quelle",
     "categoryTop14": "EU-Pflicht",
-    "categoryTop30": "Erweitert"
+    "categoryTop30": "Erweitert",
+    "tabSearch": "Suche",
+    "tabBarcode": "Barcode",
+    "tabText": "Text",
+    "tokensMatched": "Zutaten erkannt",
+    "checking": "Wird geprueft...",
+    "searchPlaceholder": "Produktname oder EAN eingeben",
+    "searchButton": "Suchen",
+    "searching": "Suche laeuft...",
+    "noResults": "Keine Produkte gefunden. Versuche einen anderen Suchbegriff.",
+    "startCamera": "Kamera starten",
+    "stopCamera": "Kamera stoppen",
+    "manualEanLabel": "Oder EAN-Code manuell eingeben:",
+    "lookupButton": "Nachschlagen",
+    "lookingUp": "Produkt wird gesucht...",
+    "productNotFound": "Kein Produkt mit EAN {ean} gefunden.",
+    "productFoundNoIngredients": "Produkt '{name}' gefunden, aber keine Zutatenliste verfuegbar.",
+    "lookupError": "Fehler bei der Produktsuche.",
+    "cameraPermissionDenied": "Kamerazugriff verweigert. Bitte erlaube den Zugriff in den Browsereinstellungen.",
+    "cameraError": "Kamera konnte nicht gestartet werden."
   },
   "profile": {
     "title": "Allergieprofil",
@@ -60,5 +96,13 @@
     "disclaimer": "Diese App ist eine Entscheidungshilfe und ersetzt keine aerztliche Beratung. Pruefe im Zweifel immer die Verpackung selbst.",
     "dataTimestamp": "Datenstand",
     "checkTimestamp": "Geprueft am"
+  },
+  "history": {
+    "title": "Scan-Verlauf",
+    "subtitle": "Deine letzten 50 Scans",
+    "empty": "Noch keine Scans vorhanden. Scanne ein Produkt, um den Verlauf zu starten.",
+    "safe": "Sicher",
+    "warning": "Warnung",
+    "danger": "Gefahr"
   }
 }

@@ -3,18 +3,33 @@
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { createClient } from '@/lib/supabase/client'
+import { ProductSearch } from '@/components/ProductSearch'
+import { BarcodeScanner } from '@/components/BarcodeScanner'
 import type { ScanDecision } from '@/lib/engine/types'
+
+type Tab = 'text' | 'search' | 'barcode'
+
+interface Product {
+  id?: string
+  ean: string
+  name: string
+  brand: string
+  ingredients_text: string
+}
 
 export default function DashboardPage() {
   const t = useTranslations('scan')
   const tr = useTranslations('result')
+  const [activeTab, setActiveTab] = useState<Tab>('search')
   const [ingredientsText, setIngredientsText] = useState('')
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
   const [result, setResult] = useState<ScanDecision | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  async function handleCheck() {
-    if (!ingredientsText.trim()) return
+  async function handleCheck(text?: string, productId?: string) {
+    const checkText = text || ingredientsText
+    if (!checkText.trim()) return
 
     setError('')
     setLoading(true)
@@ -30,7 +45,10 @@ export default function DashboardPage() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${session?.access_token}`,
         },
-        body: JSON.stringify({ ingredients_text: ingredientsText }),
+        body: JSON.stringify({
+          ingredients_text: checkText,
+          product_id: productId || null,
+        }),
       })
 
       const data = await response.json()
@@ -46,6 +64,21 @@ export default function DashboardPage() {
       setLoading(false)
     }
   }
+
+  function handleProductSelect(product: Product) {
+    setSelectedProduct(product)
+    setIngredientsText(product.ingredients_text)
+    setResult(null)
+    setError('')
+    // Auto-check immediately
+    handleCheck(product.ingredients_text, product.id)
+  }
+
+  const tabs: { key: Tab; label: string }[] = [
+    { key: 'search', label: t('tabSearch') },
+    { key: 'barcode', label: t('tabBarcode') },
+    { key: 'text', label: t('tabText') },
+  ]
 
   const resultColors = {
     safe: 'border-green-500 bg-green-50 dark:bg-green-950',
@@ -63,41 +96,93 @@ export default function DashboardPage() {
     <div className="mx-auto max-w-2xl px-4 py-8">
       <h1 className="text-2xl font-bold">{t('title')}</h1>
 
-      <div className="mt-6 space-y-4">
-        <div>
-          <label htmlFor="ingredients" className="block text-sm font-medium">
-            {t('inputLabel')}
-          </label>
-          <textarea
-            id="ingredients"
-            value={ingredientsText}
-            onChange={(e) => setIngredientsText(e.target.value)}
-            placeholder={t('inputPlaceholder')}
-            rows={4}
-            className="mt-1 block w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
-          />
-        </div>
+      {/* Tabs */}
+      <div className="mt-6 flex gap-1 rounded-lg border border-zinc-200 p-1 dark:border-zinc-700">
+        {tabs.map((tab) => (
+          <button
+            key={tab.key}
+            onClick={() => { setActiveTab(tab.key); setResult(null); setError(''); setSelectedProduct(null) }}
+            className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+              activeTab === tab.key
+                ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900'
+                : 'text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100'
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
 
-        <button
-          onClick={handleCheck}
-          disabled={loading || !ingredientsText.trim()}
-          className="rounded-lg bg-zinc-900 px-6 py-2.5 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
-        >
-          {loading ? '...' : t('checkButton')}
-        </button>
+      <div className="mt-4 space-y-4">
+        {/* Tab: Product Search */}
+        {activeTab === 'search' && (
+          <ProductSearch onProductSelect={handleProductSelect} />
+        )}
 
+        {/* Tab: Barcode Scanner */}
+        {activeTab === 'barcode' && (
+          <BarcodeScanner onProductFound={handleProductSelect} />
+        )}
+
+        {/* Tab: Manual Text Input */}
+        {activeTab === 'text' && (
+          <div className="space-y-4">
+            <div>
+              <label htmlFor="ingredients" className="block text-sm font-medium">
+                {t('inputLabel')}
+              </label>
+              <textarea
+                id="ingredients"
+                value={ingredientsText}
+                onChange={(e) => setIngredientsText(e.target.value)}
+                placeholder={t('inputPlaceholder')}
+                rows={4}
+                className="mt-1 block w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+              />
+            </div>
+
+            <button
+              onClick={() => handleCheck()}
+              disabled={loading || !ingredientsText.trim()}
+              className="rounded-lg bg-zinc-900 px-6 py-2.5 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
+            >
+              {loading ? '...' : t('checkButton')}
+            </button>
+          </div>
+        )}
+
+        {/* Selected product info */}
+        {selectedProduct && (activeTab === 'search' || activeTab === 'barcode') && (
+          <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-3 dark:border-zinc-700 dark:bg-zinc-900">
+            <div className="text-sm font-medium">{selectedProduct.name}</div>
+            {selectedProduct.brand && (
+              <div className="text-xs text-zinc-500">{selectedProduct.brand}</div>
+            )}
+            <div className="mt-1 text-xs text-zinc-400 line-clamp-2">
+              {selectedProduct.ingredients_text}
+            </div>
+          </div>
+        )}
+
+        {/* Loading */}
+        {loading && (
+          <div className="text-center text-sm text-zinc-500">{t('checking')}</div>
+        )}
+
+        {/* Error */}
         {error && (
           <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800 dark:border-red-800 dark:bg-red-950 dark:text-red-200">
             {error}
           </div>
         )}
 
+        {/* Result */}
         {result && (
           <div className={`rounded-lg border-2 p-4 ${resultColors[result.result]}`}>
             <div className="text-lg font-bold">{resultLabels[result.result]}</div>
 
             <div className="mt-2 text-sm">
-              {result.matched_tokens}/{result.total_tokens} tokens matched
+              {result.matched_tokens}/{result.total_tokens} {t('tokensMatched')}
             </div>
 
             {result.matched_allergens.length > 0 && (
