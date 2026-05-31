@@ -15,7 +15,11 @@
     "back": "Back",
     "loading": "Loading...",
     "error": "Error",
+    "errorMessage": "Something went wrong. Please try again.",
+    "tryAgain": "Try again",
     "success": "Success",
+    "share": "Share",
+    "copied": "Copied to clipboard",
     "impressum": "Imprint",
     "datenschutz": "Privacy",
     "agb": "Terms"
@@ -55,6 +59,9 @@
     "noAccount": "No account yet?",
     "hasAccount": "Already have an account?",
     "forgotPassword": "Forgot password?",
+    "magicLinkDesc": "No password needed. We will send you a login link by email.",
+    "magicLinkButton": "Send magic link",
+    "magicLinkSuccess": "Login link sent! Check your inbox.",
     "confirmEmail": "Please confirm your email address. We sent you a link.",
     "back": "Back",
     "next": "Next",
@@ -162,7 +169,15 @@
   "result": {
     "disclaimer": "This app is a decision aid and does not replace medical advice. When in doubt, always check the packaging yourself.",
     "dataTimestamp": "Data as of",
-    "checkTimestamp": "Checked on"
+    "checkTimestamp": "Checked on",
+    "whyWarning": "Why caution?",
+    "reasonTrace": "Trace indication detected (may contain)",
+    "reasonExtended": "Extended allergen (not EU mandatory)",
+    "reasonUnknown": "Unknown ingredients in the list",
+    "reasonPossible": "Possible but uncertain match",
+    "whyDanger": "Why not suitable?",
+    "reasonDefinite": "Definite match on your critical allergen",
+    "reasonHighRisk": "Mandatory allergen with high risk detected"
   },
   "history": {
     "heading": "Your",
@@ -173,6 +188,30 @@
     "empty": "No scans yet. Scan a product to start your history.",
     "safe": "Safe",
     "warning": "Warning",
-    "danger": "Danger"
+    "danger": "Danger",
+    "filterAll": "All",
+    "filterSafe": "Safe",
+    "filterWarning": "Warning",
+    "filterDanger": "Danger",
+    "searchPlaceholder": "Search product...",
+    "export": "Export",
+    "shareResult": "Share result"
+  },
+  "onboarding": {
+    "banner": "Welcome! Please set up your allergy profile first.",
+    "ctaButton": "Set up profile"
+  },
+  "family": {
+    "title": "Family profiles",
+    "subtitle": "Manage allergen profiles for your family.",
+    "addProfile": "Add profile",
+    "editProfile": "Edit profile",
+    "deleteProfile": "Delete profile",
+    "setDefault": "Set as default",
+    "defaultBadge": "Active",
+    "nameLabel": "Profile name",
+    "namePlaceholder": "e.g. Child 1, Partner",
+    "switchProfile": "Switch profile",
+    "confirmDelete": "Are you sure you want to delete this profile?"
   }
 }

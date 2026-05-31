@@ -49,12 +49,12 @@
   --brand-on: #0a1410;
 
   --canvas: #0d1411;
-  --canvas-raised: #131c17;
-  --surface: #18221c;
-  --surface-overlay: rgba(13, 20, 17, 0.85);
+  --canvas-raised: #141e19;
+  --surface: #1a261f;
+  --surface-overlay: rgba(13, 20, 17, 0.88);
 
-  --border: #26332b;
-  --border-strong: #364a3d;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.14);
 
   --text: #ecebe3;
   --text-secondary: #b9b8ac;

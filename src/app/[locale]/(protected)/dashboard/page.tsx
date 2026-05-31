@@ -28,6 +28,7 @@ const SIGNAL_CHIP = {
 
 export default function DashboardPage() {
   const t = useTranslations('dashboard')
+  const to = useTranslations('onboarding')
   const [data, setData] = useState<DashboardData | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -61,8 +62,21 @@ export default function DashboardPage() {
 
   if (loading || !data) {
     return (
-      <div className="flex items-center justify-center py-16">
-        <span className="h-5 w-5 animate-spin rounded-full border-2 border-app border-t-brand" />
+      <div className="mx-auto max-w-5xl px-4 py-8 lg:px-8 lg:py-12 animate-pulse">
+        <div className="h-3 w-20 rounded-full bg-canvas-raised" />
+        <div className="mt-4 h-11 w-80 rounded-2xl bg-canvas-raised" />
+        <div className="mt-3 h-4 w-44 rounded-full bg-canvas-raised" />
+        <div className="mt-8 h-[100px] rounded-[28px] bg-canvas-raised" />
+        <div className="mt-6 grid gap-3 sm:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="h-28 rounded-[24px] border border-app bg-surface" />
+          ))}
+        </div>
+        <div className="mt-10 space-y-3">
+          <div className="h-6 w-32 rounded-full bg-canvas-raised" />
+          <div className="h-16 rounded-[24px] border border-app bg-surface" />
+          <div className="h-16 rounded-[24px] border border-app bg-surface" />
+        </div>
       </div>
     )
   }
@@ -72,6 +86,27 @@ export default function DashboardPage() {
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 lg:px-8 lg:py-12">
+      {/* Onboarding banner */}
+      {data.allergenCount === 0 && (
+        <Link
+          href="/profile"
+          className="mb-6 flex items-center gap-3 rounded-[20px] border border-warning/40 bg-warning-tint p-4 transition-all hover:border-warning"
+        >
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-warning">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+              <line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" />
+            </svg>
+          </div>
+          <div className="flex-1">
+            <p className="text-sm font-medium text-warning">{to('banner')}</p>
+          </div>
+          <span className="rounded-full bg-warning px-3 py-1.5 text-xs font-medium text-on-brand">
+            {to('ctaButton')}
+          </span>
+        </Link>
+      )}
+
       {/* Greeting */}
       <div className="flex items-center gap-2 text-[11px] font-medium uppercase tracking-[0.18em] text-app-muted">
         <span className="h-1.5 w-1.5 rounded-full bg-brand" />

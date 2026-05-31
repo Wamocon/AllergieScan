@@ -1,14 +1,15 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { createClient } from '@/lib/supabase/client'
 
 interface ScanRecord {
   id: string
   ingredients_text: string
+  product_name?: string
   result: 'safe' | 'warning' | 'danger'
-  matched_allergens: { allergen_name_de: string; category: string }[]
+  matched_allergens: { allergen_name_de: string; allergen_name_en: string; category: string }[]
   unknown_tokens: string[]
   scan_source: string
   created_at: string
@@ -16,8 +17,11 @@ interface ScanRecord {
 
 export default function HistoryPage() {
   const t = useTranslations('history')
+  const locale = useLocale()
   const [scans, setScans] = useState<ScanRecord[]>([])
   const [loading, setLoading] = useState(true)
+  const [filter, setFilter] = useState<'all' | 'safe' | 'warning' | 'danger'>('all')
+  const [searchQuery, setSearchQuery] = useState('')
 
   useEffect(() => {
     async function load() {
@@ -34,6 +38,20 @@ export default function HistoryPage() {
     load()
   }, [])
 
+  const filteredScans = scans.filter((scan) => {
+    if (filter !== 'all' && scan.result !== filter) return false
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase()
+      const nameMatch = scan.product_name?.toLowerCase().includes(q)
+      const ingredientMatch = scan.ingredients_text.toLowerCase().includes(q)
+      const allergenMatch = scan.matched_allergens.some((a) =>
+        a.allergen_name_de.toLowerCase().includes(q) || a.allergen_name_en.toLowerCase().includes(q)
+      )
+      if (!nameMatch && !ingredientMatch && !allergenMatch) return false
+    }
+    return true
+  })
+
   const config = {
     safe:    { badge: 'bg-safe-tint text-safe',       dot: 'bg-safe',    label: t('safe') },
     warning: { badge: 'bg-warning-tint text-warning', dot: 'bg-warning', label: t('warning') },
@@ -42,8 +60,15 @@ export default function HistoryPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-16">
-        <span className="h-5 w-5 animate-spin rounded-full border-2 border-app border-t-brand" />
+      <div className="mx-auto max-w-3xl px-4 py-8 lg:py-12 animate-pulse">
+        <div className="h-3 w-24 rounded-full bg-canvas-raised" />
+        <div className="mt-4 h-10 w-56 rounded-2xl bg-canvas-raised" />
+        <div className="mt-3 h-4 w-40 rounded-full bg-canvas-raised" />
+        <div className="mt-8 grid gap-3 sm:grid-cols-2">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="h-36 rounded-[24px] border border-app bg-surface" />
+          ))}
+        </div>
       </div>
     )
   }
@@ -59,6 +84,37 @@ export default function HistoryPage() {
       </h1>
       <p className="mt-2 text-sm text-app-secondary">{t('subtitle')}</p>
 
+      {/* Filter bar */}
+      {scans.length > 0 && (
+        <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex gap-1 rounded-full border border-app bg-canvas-raised p-1">
+            {(['all', 'safe', 'warning', 'danger'] as const).map((f) => (
+              <button
+                key={f}
+                onClick={() => setFilter(f)}
+                className={`rounded-full px-3 py-1.5 text-xs font-medium transition-all ${
+                  filter === f ? 'bg-brand text-on-brand shadow-brand' : 'text-app-secondary hover:text-brand'
+                }`}
+              >
+                {t(`filter${f.charAt(0).toUpperCase() + f.slice(1)}` as 'filterAll' | 'filterSafe' | 'filterWarning' | 'filterDanger')}
+              </button>
+            ))}
+          </div>
+          <div className="relative max-w-xs">
+            <svg className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-app-muted" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            <input
+              type="search"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder={t('searchPlaceholder')}
+              className="w-full rounded-full border border-app bg-surface py-2 pl-8 pr-3 text-xs text-app placeholder:text-app-muted focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
+            />
+          </div>
+        </div>
+      )}
+
       {scans.length === 0 ? (
         <div className="mt-16 flex flex-col items-center text-center">
           <div className="flex h-20 w-20 items-center justify-center rounded-full bg-canvas-raised border border-app">
@@ -70,9 +126,13 @@ export default function HistoryPage() {
           <p className="mt-5 font-serif-italic text-xl text-app">{t('emptyTitle')}</p>
           <p className="mt-1 text-sm text-app-muted">{t('empty')}</p>
         </div>
+      ) : filteredScans.length === 0 ? (
+        <div className="mt-12 text-center text-sm text-app-muted">
+          {t('empty')}
+        </div>
       ) : (
-        <div className="mt-8 grid gap-3 sm:grid-cols-2">
-          {scans.map((scan) => {
+        <div className="mt-6 grid gap-3 sm:grid-cols-2">
+          {filteredScans.map((scan) => {
             const c = config[scan.result]
             return (
               <div key={scan.id} className="group rounded-[24px] border border-app bg-surface p-5 transition-all hover:border-app-strong hover:-translate-y-0.5">
@@ -82,11 +142,15 @@ export default function HistoryPage() {
                     {c.label}
                   </span>
                   <time className="text-xs text-app-muted">
-                    {new Date(scan.created_at).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: '2-digit' })}
+                    {new Date(scan.created_at).toLocaleDateString(locale === 'de' ? 'de-DE' : 'en-US', { day: '2-digit', month: '2-digit', year: '2-digit' })}
                   </time>
                 </div>
 
-                <p className="mt-4 line-clamp-2 text-sm leading-relaxed text-app">
+                {scan.product_name && (
+                  <p className="mt-3 text-sm font-medium text-app">{scan.product_name}</p>
+                )}
+
+                <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-app-secondary">
                   {scan.ingredients_text.slice(0, 100)}
                   {scan.ingredients_text.length > 100 && '...'}
                 </p>
@@ -95,7 +159,7 @@ export default function HistoryPage() {
                   <div className="mt-3 flex flex-wrap gap-1.5">
                     {scan.matched_allergens.slice(0, 4).map((a, i) => (
                       <span key={i} className="rounded-full bg-canvas-raised border border-app px-2 py-0.5 text-[10px] text-app-secondary">
-                        {a.allergen_name_de}
+                        {locale === 'de' ? a.allergen_name_de : a.allergen_name_en}
                       </span>
                     ))}
                   </div>

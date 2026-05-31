@@ -15,7 +15,11 @@
     "back": "Zurueck",
     "loading": "Laden...",
     "error": "Fehler",
+    "errorMessage": "Etwas ist schief gelaufen. Bitte versuche es erneut.",
+    "tryAgain": "Erneut versuchen",
     "success": "Erfolg",
+    "share": "Teilen",
+    "copied": "In die Zwischenablage kopiert",
     "impressum": "Impressum",
     "datenschutz": "Datenschutz",
     "agb": "AGB"
@@ -55,6 +59,9 @@
     "noAccount": "Noch kein Konto?",
     "hasAccount": "Bereits ein Konto?",
     "forgotPassword": "Passwort vergessen?",
+    "magicLinkDesc": "Kein Passwort noetig. Wir senden dir einen Login-Link per E-Mail.",
+    "magicLinkButton": "Magic Link senden",
+    "magicLinkSuccess": "Login-Link gesendet! Pruefe dein Postfach.",
     "confirmEmail": "Bitte bestaetige deine E-Mail-Adresse. Wir haben dir einen Link gesendet.",
     "back": "Zurueck",
     "next": "Weiter",
@@ -162,7 +169,15 @@
   "result": {
     "disclaimer": "Diese App ist eine Entscheidungshilfe und ersetzt keine aerztliche Beratung. Pruefe im Zweifel immer die Verpackung selbst.",
     "dataTimestamp": "Datenstand",
-    "checkTimestamp": "Geprueft am"
+    "checkTimestamp": "Geprueft am",
+    "whyWarning": "Warum Warnung?",
+    "reasonTrace": "Spurenhinweis erkannt (kann enthalten)",
+    "reasonExtended": "Erweitertes Allergen (nicht EU-pflichtig)",
+    "reasonUnknown": "Unbekannte Zutaten in der Liste",
+    "reasonPossible": "Moeglicher, aber nicht sicherer Treffer",
+    "whyDanger": "Warum nicht geeignet?",
+    "reasonDefinite": "Eindeutiger Treffer auf dein kritisches Allergen",
+    "reasonHighRisk": "Pflichtallergen mit hohem Risiko erkannt"
   },
   "history": {
     "title": "Scan-Verlauf",
@@ -173,6 +188,30 @@
     "emptyTitle": "Noch nichts gescannt.",
     "safe": "Sicher",
     "warning": "Warnung",
-    "danger": "Gefahr"
+    "danger": "Gefahr",
+    "filterAll": "Alle",
+    "filterSafe": "Sicher",
+    "filterWarning": "Warnung",
+    "filterDanger": "Gefahr",
+    "searchPlaceholder": "Produkt suchen...",
+    "export": "Exportieren",
+    "shareResult": "Ergebnis teilen"
+  },
+  "onboarding": {
+    "banner": "Willkommen! Bitte richte zuerst dein Allergieprofil ein.",
+    "ctaButton": "Profil einrichten"
+  },
+  "family": {
+    "title": "Familienprofile",
+    "subtitle": "Verwalte Allergenprofile fuer deine Familie.",
+    "addProfile": "Profil hinzufuegen",
+    "editProfile": "Profil bearbeiten",
+    "deleteProfile": "Profil loeschen",
+    "setDefault": "Als Standard setzen",
+    "defaultBadge": "Aktiv",
+    "nameLabel": "Profilname",
+    "namePlaceholder": "z.B. Kind 1, Partner",
+    "switchProfile": "Profil wechseln",
+    "confirmDelete": "Moechtest du dieses Profil wirklich loeschen?"
   }
 }
