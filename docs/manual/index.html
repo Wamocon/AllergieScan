@@ -5,23 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <!--
     HANDBOOK META - updated by Copilot on every relevant change
-    APP_NAME        : [APP_NAME]
+    APP_NAME        : AllergieScan
     APP_VERSION     : 0.1.0
-    LAST_UPDATED    : [LAST_UPDATED]
-    PRIMARY_COLOR   : [PRIMARY_COLOR]   e.g. #3b82f6
-    PRIMARY_DARK    : [PRIMARY_DARK]    e.g. #2563eb
-    LOGO_EMOJI      : [LOGO_EMOJI]      e.g. &#128230;
+    LAST_UPDATED    : Mai 2026
+    APP_URL         : https://allergiescan.net
+    PRIMARY_COLOR   : #1a4d3a
+    PRIMARY_DARK    : #0f3d2e
+    LOGO_EMOJI      : &#127807; (leaf)
   -->
-  <title>[APP_NAME] &ndash; Produkthandbuch | WAMOCON</title>
+  <title>AllergieScan &ndash; Produkthandbuch | WAMOCON</title>
   <style>
     /* ── Reset & Base ──────────────────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      /* Brand colors - Copilot updates these to match the app */
-      --primary:      #3b82f6;
-      --primary-dark: #2563eb;
-      --primary-glow: rgba(59,130,246,0.18);
+      /* Brand colors - AllergieScan "Calm Safety" palette */
+      --primary:      #1a4d3a;
+      --primary-dark: #0f3d2e;
+      --primary-glow: rgba(26,77,58,0.22);
       --success:      #10b981;
       --warning:      #f59e0b;
       --danger:       #ef4444;
@@ -125,8 +126,8 @@
     /* ── PDF download / OneDrive buttons ─────────────────────────── */
     .download-bar {
       display: flex; align-items: center; gap: 0.5rem;
-      background: rgba(59,130,246,0.06);
-      border: 1px solid rgba(59,130,246,0.2);
+      background: rgba(26,77,58,0.06);
+      border: 1px solid rgba(26,77,58,0.2);
       border-radius: 10px; padding: 0.5rem 1rem;
       font-size: 0.8rem; color: var(--text-muted);
     }
@@ -177,8 +178,8 @@
 
     /* ── Cover page ───────────────────────────────────────────────── */
     .cover {
-      background: linear-gradient(160deg, rgba(30,60,130,0.2) 0%, rgba(13,21,38,0.9) 100%);
-      border: 1px solid rgba(59,130,246,0.25);
+      background: linear-gradient(160deg, rgba(26,77,58,0.22) 0%, rgba(13,21,38,0.9) 100%);
+      border: 1px solid rgba(26,77,58,0.28);
       border-radius: 24px; padding: 4rem;
       margin-bottom: 4rem; position: relative; overflow: hidden;
     }
@@ -186,7 +187,7 @@
       content: '';
       position: absolute; top: -40px; right: -40px;
       width: 300px; height: 300px;
-      background: radial-gradient(circle, rgba(59,130,246,0.08) 0%, transparent 70%);
+      background: radial-gradient(circle, rgba(26,77,58,0.10) 0%, transparent 70%);
       pointer-events: none;
     }
 
@@ -231,13 +232,13 @@
       font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em;
     }
     .badge-success { background: rgba(16,185,129,0.1); color: var(--success); border: 1px solid rgba(16,185,129,0.2); }
-    .badge-primary { background: var(--primary-glow); color: var(--primary); border: 1px solid rgba(59,130,246,0.2); }
+    .badge-primary { background: var(--primary-glow); color: var(--primary); border: 1px solid rgba(26,77,58,0.25); }
     .badge-warning { background: rgba(245,158,11,0.1); color: var(--warning); border: 1px solid rgba(245,158,11,0.2); }
     .badge-danger  { background: rgba(239,68,68,0.1); color: var(--danger); border: 1px solid rgba(239,68,68,0.2); }
 
     .info-box {
       padding: 1.2rem 1.5rem; border-radius: 12px; margin: 2rem 0;
-      border-left: 4px solid var(--primary); background: rgba(59,130,246,0.05);
+      border-left: 4px solid var(--primary); background: rgba(26,77,58,0.06);
     }
     .info-box-title { font-weight: 900; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--primary); margin-bottom: 0.5rem; }
 
@@ -263,7 +264,7 @@
       font-weight: 800; text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.1em;
     }
     td { padding: 1rem; border-top: 1px solid var(--border); vertical-align: top; }
-    tr:hover td { background: rgba(59,130,246,0.02); }
+    tr:hover td { background: rgba(26,77,58,0.04); }
 
     .yes { color: var(--success); font-weight: 700; }
     .no  { color: var(--text-dim); }
@@ -298,10 +299,10 @@
 <!-- ── Header ──────────────────────────────────────────────────────── -->
 <header class="page-header no-print">
   <div class="brand">
-    <!-- LOGO: Copilot updates the emoji/letter and gradient to match the app -->
-    <div class="logo-mark" aria-label="App logo">&#128230;</div>
+    <!-- LOGO: AllergieScan leaf mark in brand green -->
+    <div class="logo-mark" aria-label="AllergieScan Logo">&#127807;</div>
     <div>
-      <div class="brand-name">[APP_NAME]</div>
+      <div class="brand-name">AllergieScan</div>
       <div class="brand-sub">WAMOCON &middot; Produkthandbuch</div>
     </div>
   </div>
@@ -354,7 +355,7 @@
     <a class="toc-link l1" href="#tutorials">03 Erste Schritte</a>
     <a class="toc-link l2" href="#tut-konto">3.1 Konto erstellen</a>
     <a class="toc-link l2" href="#tut-start">3.2 Loslegen</a>
-    <a class="toc-link l2" href="#tut-upgrade">3.3 Upgrade</a>
+    <a class="toc-link l2" href="#tut-upgrade">3.3 Profil anpassen</a>
     <a class="toc-link l1" href="#howto">04 How-to Guides</a>
     <a class="toc-link l2" href="#ht-profil">4.1 Profil verwalten</a>
     <a class="toc-link l2" href="#ht-loeschen">4.2 Konto l&ouml;schen</a>
@@ -375,13 +376,13 @@
     <!-- ── Cover ─────────────────────────────────────────────────── -->
     <div class="cover">
       <div class="doc-type">Offizielles Produkthandbuch &middot; WAMOCON GmbH</div>
-      <h1>[APP_NAME]</h1>
-      <div class="cover-sub">[APP_TAGLINE]</div>
+      <h1>AllergieScan</h1>
+      <div class="cover-sub">Sicher einkaufen mit Allergie &ndash; Zutaten pr&uuml;fen in Sekunden.</div>
       <div class="cover-meta">
-        <div><div class="meta-label">Version</div><div class="meta-value">[APP_VERSION]</div></div>
-        <div><div class="meta-label">Status</div><div class="meta-value"><span class="badge badge-success">Produktiv</span></div></div>
-        <div><div class="meta-label">Pl&auml;ne</div><div class="meta-value">[PLAN_NAMES]</div></div>
-        <div><div class="meta-label">Datum</div><div class="meta-value">[LAST_UPDATED]</div></div>
+        <div><div class="meta-label">Version</div><div class="meta-value">0.1.0</div></div>
+        <div><div class="meta-label">Status</div><div class="meta-value"><span class="badge badge-success">Live</span></div></div>
+        <div><div class="meta-label">Domain</div><div class="meta-value"><a href="https://allergiescan.net">allergiescan.net</a></div></div>
+        <div><div class="meta-label">Datum</div><div class="meta-value">Mai 2026</div></div>
       </div>
     </div>
 
@@ -389,42 +390,45 @@
     <section id="uebersicht">
       <h2><span class="num">01</span> &Uuml;bersicht</h2>
       <p>
-        [APP_NAME] ist eine webbasierte SaaS-Plattform, die [APP_DESCRIPTION].
+        AllergieScan ist eine webbasierte App, mit der Allergiker und Eltern in der DACH-Region
+        Lebensmittelzutaten in Sekunden gegen ihr pers&ouml;nliches Allergenprofil pr&uuml;fen k&ouml;nnen &ndash;
+        per Barcode-Scan, Produktsuche oder freier Texteingabe.
       </p>
       <div class="card">
-        <strong>Was [APP_NAME] l&ouml;st:</strong> [PROBLEM_STATEMENT]
+        <strong>Was AllergieScan l&ouml;st:</strong> Zutatenlisten auf Verpackungen sind klein gedruckt,
+        mehrsprachig und voller versteckter Synonyme. AllergieScan erkennt alle 14 EU-Pflichtallergene
+        sowie 30 weitere h&auml;ufige Trigger automatisch und liefert eine klare Ampel-Bewertung:
+        sicher, Warnung oder Gefahr.
       </div>
       <div class="feature-grid">
-        <!-- Copilot fills these cards based on actual implemented features -->
         <div class="feature-card">
           <div class="feature-icon">&#128269;</div>
-          <div class="feature-title">[FEATURE_1_TITLE]</div>
-          <div class="feature-desc">[FEATURE_1_DESC]</div>
+          <div class="feature-title">Produktsuche</div>
+          <div class="feature-desc">Suche per Name oder EAN und pr&uuml;fe die Zutatenliste sofort gegen dein Profil.</div>
         </div>
         <div class="feature-card">
-          <div class="feature-icon">&#9889;</div>
-          <div class="feature-title">[FEATURE_2_TITLE]</div>
-          <div class="feature-desc">[FEATURE_2_DESC]</div>
+          <div class="feature-icon">&#128241;</div>
+          <div class="feature-title">Barcode-Scanner</div>
+          <div class="feature-desc">Scanne EAN-Codes direkt im Supermarkt mit der Handy-Kamera.</div>
         </div>
         <div class="feature-card">
-          <div class="feature-icon">&#128202;</div>
-          <div class="feature-title">[FEATURE_3_TITLE]</div>
-          <div class="feature-desc">[FEATURE_3_DESC]</div>
+          <div class="feature-icon">&#128737;</div>
+          <div class="feature-title">Allergie-Ampel</div>
+          <div class="feature-desc">Gr&uuml;n / Gelb / Rot &ndash; mit Quellenangabe und Confidence-Score je Treffer.</div>
         </div>
         <div class="feature-card">
-          <div class="feature-icon">&#128276;</div>
-          <div class="feature-title">[FEATURE_4_TITLE]</div>
-          <div class="feature-desc">[FEATURE_4_DESC]</div>
+          <div class="feature-icon">&#128100;</div>
+          <div class="feature-title">Pers&ouml;nliches Profil</div>
+          <div class="feature-desc">EU-14-Pflichtallergene plus 30 erweiterte Unvertr&auml;glichkeiten, jederzeit anpassbar.</div>
         </div>
       </div>
       <div class="table-wrap">
         <table>
           <thead><tr><th>Nutzerrolle</th><th>Beschreibung</th></tr></thead>
           <tbody>
-            <!-- Copilot updates rows to reflect actual roles -->
-            <tr><td><strong>Free-Nutzer</strong></td><td>[FREE_ROLE_DESC]</td></tr>
-            <tr><td><strong>Pro-Nutzer</strong></td><td>[PRO_ROLE_DESC]</td></tr>
-            <tr><td><strong>Admin (WAMOCON)</strong></td><td>Nutzerverwaltung, Systemkonfiguration, Monitoring</td></tr>
+            <tr><td><strong>Gast</strong></td><td>Kann die Startseite, Hilfe und Rechtstexte einsehen &ndash; aber keine Produkte pr&uuml;fen.</td></tr>
+            <tr><td><strong>Registrierter Nutzer</strong></td><td>Voller Funktionsumfang: Profil-Wizard, Scan, Suche, Barcode, Verlauf.</td></tr>
+            <tr><td><strong>Admin (WAMOCON)</strong></td><td>Pflege der Allergen-, Zutaten- und Synonym-Tabellen via Supabase Studio.</td></tr>
           </tbody>
         </table>
       </div>
@@ -435,24 +439,39 @@
       <h2><span class="num">02</span> Funktionen</h2>
 
       <h3 id="feature-list">2.1 Feature-Liste</h3>
-      <p>[FEATURE_LIST_INTRO]</p>
-      <div class="info-box">
-        <div class="info-box-title">Hinweis</div>
-        <p>Diese Liste wird von Copilot automatisch aktualisiert, wenn neue Features implementiert werden.</p>
+      <p>Alle Funktionen sind in der aktuellen Version (0.1.0) f&uuml;r alle registrierten Nutzer freigeschaltet.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Funktion</th><th>Beschreibung</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Allergieprofil-Wizard</strong></td><td>4-Schritt-Onboarding: Zugang, Stammdaten, EU-14-Pflichtallergene, 30 erweiterte Trigger.</td></tr>
+            <tr><td><strong>Text-Pr&uuml;fung</strong></td><td>Zutatenliste einf&uuml;gen, sofortige Ampel-Bewertung mit erkannten Allergenen.</td></tr>
+            <tr><td><strong>Produktsuche</strong></td><td>Suche nach Produktname &uuml;ber Open Food Facts und interne Datenbank.</td></tr>
+            <tr><td><strong>Barcode-Scanner</strong></td><td>html5-qrcode Live-Kamera, alternativ manuelle EAN-Eingabe.</td></tr>
+            <tr><td><strong>Scan-Verlauf</strong></td><td>Alle Pr&uuml;fungen werden in <code>scan_results</code> protokolliert und im Verlauf angezeigt.</td></tr>
+            <tr><td><strong>Mehrsprachigkeit</strong></td><td>Deutsch (Standard) und Englisch via next-intl, mit Locale-Routing <code>/de</code> und <code>/en</code>.</td></tr>
+            <tr><td><strong>Light- &amp; Dark-Mode</strong></td><td>Calm-Safety-Palette in beiden Themes, system-pr&auml;ferenzbasiert oder manuell.</td></tr>
+            <tr><td><strong>Handbuch-PDF</strong></td><td>Dieses Handbuch als PDF unter <code>/api/handbook/pdf</code> abrufbar.</td></tr>
+          </tbody>
+        </table>
       </div>
 
       <h3 id="plaene">2.2 Pl&auml;ne &amp; Preise</h3>
+      <p>AllergieScan ist in Version 0.1.0 vollst&auml;ndig <strong>kostenlos</strong> nutzbar. Kein Abo, keine Werbung, keine versteckten Kosten.</p>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Feature</th><th>Free</th><th>Pro ([PRO_PRICE])</th></tr></thead>
+          <thead><tr><th>Funktion</th><th>Kostenlos</th></tr></thead>
           <tbody>
-            <!-- Copilot updates this table when pricing/plans change -->
-            <tr><td>[FEATURE_A]</td><td class="yes">&#10003;</td><td class="yes">&#10003;</td></tr>
-            <tr><td>[FEATURE_B]</td><td class="yes">&#10003;</td><td class="yes">&#10003;</td></tr>
-            <tr><td>[FEATURE_C_PRO]</td><td class="no">&#10007;</td><td class="yes">&#10003;</td></tr>
-            <tr><td>[FEATURE_D_PRO]</td><td class="no">&#10007;</td><td class="yes">&#10003;</td></tr>
+            <tr><td>Allergieprofil mit EU-14 + 30 erweiterten Triggern</td><td class="yes">&#10003;</td></tr>
+            <tr><td>Text-, Suche- und Barcode-Pr&uuml;fung</td><td class="yes">&#10003;</td></tr>
+            <tr><td>Scan-Verlauf</td><td class="yes">&#10003;</td></tr>
+            <tr><td>Mehrsprachigkeit (DE/EN), Light- &amp; Dark-Mode</td><td class="yes">&#10003;</td></tr>
           </tbody>
         </table>
+      </div>
+      <div class="info-box">
+        <div class="info-box-title">Ausblick</div>
+        <p>F&uuml;r sp&auml;tere Versionen ist optional ein Pro-Plan mit erweiterten Marken-Datenbanken, Familien-Profilen und Offline-Scans geplant.</p>
       </div>
     </section>
 
@@ -462,29 +481,27 @@
 
       <h3 id="tut-konto">3.1 Konto erstellen</h3>
       <ol>
-        <!-- Copilot updates steps to match actual auth flow and routes -->
-        <li><code>[APP_URL]/auth/registrieren</code> aufrufen</li>
-        <li>E-Mail-Adresse und Passwort (min. 8 Zeichen) eingeben</li>
-        <li>AGB und Datenschutzerkl&auml;rung akzeptieren</li>
-        <li><strong>&bdquo;Kostenlos starten&ldquo;</strong> klicken</li>
-        <li>Best&auml;tigungslink in der E-Mail anklicken</li>
-        <li>Weiterleitung zum Dashboard</li>
+        <li><code>https://allergiescan.net/de/register</code> aufrufen</li>
+        <li>E-Mail-Adresse und Passwort (min. 6 Zeichen) eingeben &ndash; alternativ Magic-Link anfordern</li>
+        <li>Anzeigename und (optional) Geburtsjahr im Wizard angeben</li>
+        <li>Pflichtallergene (EU-14) ausw&auml;hlen &ndash; Auswahl kann sp&auml;ter jederzeit ge&auml;ndert werden</li>
+        <li>Optional: 30 erweiterte Unvertr&auml;glichkeiten festlegen oder &uuml;berspringen</li>
+        <li>Weiterleitung zum Dashboard mit aktivem Profil</li>
       </ol>
 
       <h3 id="tut-start">3.2 Loslegen</h3>
       <ol>
-        <!-- Copilot fills this section with the actual first-run workflow -->
-        <li>[STEP_1]</li>
-        <li>[STEP_2]</li>
-        <li>[STEP_3]</li>
+        <li><strong>Scan starten:</strong> Im Dashboard auf <em>&bdquo;Scan&ldquo;</em> tippen.</li>
+        <li><strong>Methode w&auml;hlen:</strong> Suche (Produktname), Barcode (Kamera/EAN) oder Text (Zutatenliste einf&uuml;gen).</li>
+        <li><strong>Ergebnis lesen:</strong> Ampel zeigt <span class="yes">gr&uuml;n</span> (geeignet), <span style="color:var(--warning)">gelb</span> (Vorsicht) oder <span style="color:var(--danger)">rot</span> (nicht geeignet) &ndash; inkl. erkannter Allergene und Confidence-Score.</li>
       </ol>
 
-      <h3 id="tut-upgrade">3.3 Auf Pro upgraden</h3>
+      <h3 id="tut-upgrade">3.3 Profil sp&auml;ter anpassen</h3>
       <ol>
-        <li>Im Dashboard auf <strong>&bdquo;Auf Pro upgraden&ldquo;</strong> klicken</li>
-        <li>Stripe Checkout &ouml;ffnet sich im selben Fenster</li>
-        <li>Zahlungsdaten eingeben (Kreditkarte, SEPA-Lastschrift)</li>
-        <li>Nach Zahlung: automatische R&uuml;ckleitung zum Dashboard mit aktiviertem Pro-Status</li>
+        <li>Auf <em>&bdquo;Profil&ldquo;</em> in der Bottom-Navigation tippen</li>
+        <li>Allergene per Toggle aktivieren / deaktivieren</li>
+        <li>&Auml;nderungen werden automatisch in <code>user_profiles</code> gespeichert</li>
+        <li>Beim n&auml;chsten Scan greift sofort die neue Auswahl</li>
       </ol>
     </section>
 
@@ -492,23 +509,20 @@
     <section id="howto">
       <h2><span class="num">04</span> How-to Guides</h2>
 
-      <h3 id="ht-profil">4.1 Profil &amp; Abonnement verwalten</h3>
+      <h3 id="ht-profil">4.1 Profil verwalten</h3>
       <ol>
-        <li><code>/[locale]/profil</code> aufrufen</li>
-        <li>Stammdaten (Name, E-Mail) &auml;ndern &rarr; <strong>&bdquo;Speichern&ldquo;</strong></li>
-        <li>Passwort &auml;ndern &rarr; Best&auml;tigungs-E-Mail wird versandt</li>
-        <li>Abo-Status und n&auml;chstes Abrechnungsdatum einsehen</li>
-        <li>Zahlungsmethode &auml;ndern &rarr; Weiterleitung zum Stripe Customer Portal</li>
-        <li>Pro-Abo k&uuml;ndigen &rarr; Weiterleitung zum Stripe Customer Portal (K&uuml;ndigung zum Periodenende)</li>
+        <li><code>/de/profile</code> aufrufen (Bottom-Nav &bdquo;Profil&ldquo;)</li>
+        <li>Anzeigename oder Geburtsjahr &auml;ndern &rarr; <strong>&bdquo;Speichern&ldquo;</strong></li>
+        <li>EU-14-Pflichtallergene und 30 erweiterte Trigger per Toggle ein-/ausschalten</li>
+        <li>Snapshot der letzten Scans im Verlauf unter <code>/de/history</code> einsehen</li>
       </ol>
 
       <h3 id="ht-loeschen">4.2 Konto l&ouml;schen (DSGVO)</h3>
       <ol>
-        <li><code>/[locale]/profil</code> aufrufen &rarr; Abschnitt <strong>&bdquo;Konto l&ouml;schen&ldquo;</strong></li>
+        <li><code>/de/profile</code> aufrufen &rarr; Abschnitt <strong>&bdquo;Konto l&ouml;schen&ldquo;</strong></li>
         <li>Best&auml;tigungsdialog &ouml;ffnet sich &ndash; Vorgang ist <strong>nicht r&uuml;ckg&auml;ngig zu machen</strong></li>
         <li>Best&auml;tigung eingeben und <strong>&bdquo;Konto unwiderruflich l&ouml;schen&ldquo;</strong> klicken</li>
-        <li>Alle personenbezogenen Daten werden gel&ouml;scht (DSGVO Art. 17)</li>
-        <li>Aktives Pro-Abo wird bei Stripe sofort gek&uuml;ndigt</li>
+        <li>Alle personenbezogenen Daten (Profil, Allergenauswahl, Scan-Verlauf) werden gel&ouml;scht (DSGVO Art. 17)</li>
       </ol>
 
       <div class="warn-box">
@@ -526,16 +540,18 @@
         <table>
           <thead><tr><th>Route</th><th>Beschreibung</th><th>Zugriff</th></tr></thead>
           <tbody>
-            <!-- Copilot updates this table to match actual app routes from src/app/ -->
-            <tr><td><code>/[locale]</code></td><td>Startseite / Marketing</td><td>Alle</td></tr>
-            <tr><td><code>/[locale]/auth/anmelden</code></td><td>Login</td><td>&Ouml;ffentlich</td></tr>
-            <tr><td><code>/[locale]/auth/registrieren</code></td><td>Registrierung</td><td>&Ouml;ffentlich</td></tr>
-            <tr><td><code>/[locale]/dashboard</code></td><td>Nutzer-Dashboard</td><td>Eingeloggt</td></tr>
-            <tr><td><code>/[locale]/profil</code></td><td>Profil, Abo, Konto</td><td>Eingeloggt</td></tr>
-            <tr><td><code>/[locale]/admin</code></td><td>Admin-Dashboard</td><td>Admin only</td></tr>
-            <tr><td><code>/[locale]/impressum</code></td><td>Impressum</td><td>Alle</td></tr>
-            <tr><td><code>/[locale]/datenschutz</code></td><td>Datenschutzerkl&auml;rung</td><td>Alle</td></tr>
-            <tr><td><code>/[locale]/agb</code></td><td>AGB</td><td>Alle</td></tr>
+            <tr><td><code>/[locale]</code></td><td>Startseite / Marketing-Landing</td><td>&Ouml;ffentlich</td></tr>
+            <tr><td><code>/[locale]/login</code></td><td>Anmeldung (Passwort oder Magic-Link)</td><td>&Ouml;ffentlich</td></tr>
+            <tr><td><code>/[locale]/register</code></td><td>Registrierung mit 4-Schritt-Profil-Wizard</td><td>&Ouml;ffentlich</td></tr>
+            <tr><td><code>/auth/callback</code></td><td>Supabase Auth Callback (OAuth/Magic-Link)</td><td>System</td></tr>
+            <tr><td><code>/[locale]/dashboard</code></td><td>Start nach Login, Schnellzugriff Scan</td><td>Eingeloggt</td></tr>
+            <tr><td><code>/[locale]/scan</code></td><td>Pr&uuml;fung per Suche, Barcode oder Text</td><td>Eingeloggt</td></tr>
+            <tr><td><code>/[locale]/history</code></td><td>Verlauf aller bisherigen Scans</td><td>Eingeloggt</td></tr>
+            <tr><td><code>/[locale]/profile</code></td><td>Allergieprofil und Stammdaten</td><td>Eingeloggt</td></tr>
+            <tr><td><code>/[locale]/help</code></td><td>Eingebettetes Handbuch (HandbookViewer)</td><td>&Ouml;ffentlich</td></tr>
+            <tr><td><code>/[locale]/legal/impressum</code></td><td>Impressum</td><td>&Ouml;ffentlich</td></tr>
+            <tr><td><code>/[locale]/legal/datenschutz</code></td><td>Datenschutzerkl&auml;rung</td><td>&Ouml;ffentlich</td></tr>
+            <tr><td><code>/[locale]/legal/agb</code></td><td>AGB</td><td>&Ouml;ffentlich</td></tr>
           </tbody>
         </table>
       </div>
@@ -543,15 +559,19 @@
       <h3 id="api">5.2 API &amp; Hooks</h3>
       <div class="info-box">
         <div class="info-box-title">Lebende Dokumentation</div>
-        <p>Copilot erg&auml;nzt diese Tabelle automatisch, wenn neue API-Routen oder Hooks hinzugef&uuml;gt werden.</p>
+        <p>Alle API-Routen liegen unter <code>src/app/api/</code> und werden durch die Middleware-Session-Pr&uuml;fung gesch&uuml;tzt.</p>
       </div>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Endpunkt / Hook</th><th>Methode</th><th>Beschreibung</th><th>Zugriff</th></tr></thead>
+          <thead><tr><th>Endpunkt</th><th>Methode</th><th>Beschreibung</th><th>Zugriff</th></tr></thead>
           <tbody>
-            <!-- Copilot updates rows when API routes are added/changed -->
-            <tr><td><code>/api/health</code></td><td>GET</td><td>Health-Check</td><td>Alle</td></tr>
-            <tr><td><code>/api/stripe/webhook</code></td><td>POST</td><td>Stripe-Webhook (intern)</td><td>Stripe only</td></tr>
+            <tr><td><code>/api/allergens</code></td><td>GET</td><td>Liste aller Allergene (EU-14 + Top-30) inkl. Kategorie</td><td>&Ouml;ffentlich</td></tr>
+            <tr><td><code>/api/check</code></td><td>POST</td><td>Engine-Check einer Zutatenliste, liefert Ampel + Treffer</td><td>Eingeloggt</td></tr>
+            <tr><td><code>/api/products/search</code></td><td>GET</td><td>Produktsuche nach Name (interne DB + Open Food Facts)</td><td>Eingeloggt</td></tr>
+            <tr><td><code>/api/products/barcode</code></td><td>GET</td><td>EAN-Lookup mit Fallback auf Open Food Facts</td><td>Eingeloggt</td></tr>
+            <tr><td><code>/api/profile</code></td><td>GET / PUT</td><td>Eigenes Allergieprofil lesen und aktualisieren</td><td>Eingeloggt</td></tr>
+            <tr><td><code>/api/history</code></td><td>GET</td><td>Eigener Scan-Verlauf</td><td>Eingeloggt</td></tr>
+            <tr><td><code>/api/handbook/pdf</code></td><td>GET</td><td>Generiert dieses Handbuch als PDF</td><td>&Ouml;ffentlich</td></tr>
           </tbody>
         </table>
       </div>
@@ -566,44 +586,50 @@
         <table>
           <thead><tr><th>Schicht</th><th>Technologie</th><th>Aufgabe</th></tr></thead>
           <tbody>
-            <tr><td>Frontend &amp; Backend</td><td>Next.js 16 (App Router), TypeScript</td><td>SSR, API-Routen, Middleware</td></tr>
-            <tr><td>Styling</td><td>Tailwind CSS v4</td><td>Utility-First, Dark/Light Mode</td></tr>
-            <tr><td>Datenbank &amp; Auth</td><td>Supabase (PostgreSQL, RLS)</td><td>Schema <code>[DB_SCHEMA]</code></td></tr>
-            <tr><td>i18n</td><td>next-intl v4</td><td>Deutsch (prim&auml;r) &amp; Englisch</td></tr>
-            <tr><td>Payment</td><td>Stripe</td><td>Abonnement, Customer Portal</td></tr>
-            <tr><td>E-Mail</td><td>Resend</td><td>Transaktions-E-Mails, Benachrichtigungen</td></tr>
-            <tr><td>Tests</td><td>Vitest, Testing Library</td><td>Unit-Tests, Coverage-Threshold</td></tr>
-            <tr><td>CI/CD</td><td>GitHub Actions</td><td>Tests, Lint, Typecheck, Vercel Deploy</td></tr>
-            <tr><td>Hosting</td><td>Vercel (Frontend), Supabase EU-Frankfurt</td><td>DSGVO-konforme EU-Region</td></tr>
+            <tr><td>Frontend &amp; Backend</td><td>Next.js 16.2.1 (App Router, Turbopack), TypeScript</td><td>SSR, API-Routen, Middleware</td></tr>
+            <tr><td>Styling</td><td>Tailwind CSS v4 (&bdquo;Calm Safety&ldquo;-Palette)</td><td>Utility-First, Light- &amp; Dark-Mode</td></tr>
+            <tr><td>Datenbank &amp; Auth</td><td>Supabase (PostgreSQL, RLS, @supabase/ssr)</td><td>Schema <code>public</code>, E-Mail + Magic-Link</td></tr>
+            <tr><td>i18n</td><td>next-intl v4</td><td>Deutsch (prim&auml;r) &amp; Englisch via <code>/[locale]/</code></td></tr>
+            <tr><td>Scanner</td><td>html5-qrcode 2.3</td><td>EAN-Barcode-Erkennung &uuml;ber die Browser-Kamera</td></tr>
+            <tr><td>Produktdaten</td><td>Open Food Facts API</td><td>Externe Suche und EAN-Lookup als Fallback</td></tr>
+            <tr><td>PDF</td><td>pdf-lib + docx</td><td>Handbuch-PDF und Anforderungsdokument-Generator</td></tr>
+            <tr><td>CI/CD</td><td>GitHub Actions</td><td>PR-Pipeline, Launch-Checklist, Deploy</td></tr>
+            <tr><td>Hosting</td><td>Vercel (Frankfurt) + Strato-Domain <code>allergiescan.net</code></td><td>DSGVO-konforme EU-Region</td></tr>
           </tbody>
         </table>
       </div>
 
       <h3 id="tech-schema">6.2 Datenbank-Schema</h3>
-      <p>Supabase-Schema: <code>[DB_SCHEMA_DEV]</code> (Entwicklung) / <code>[DB_SCHEMA_PROD]</code> (Produktion). Row Level Security (RLS) ist auf allen Tabellen aktiv.</p>
+      <p>Supabase-Schema: <code>public</code>. Row Level Security (RLS) ist auf allen nutzerbezogenen Tabellen aktiv. Stammdaten (Allergene, Zutaten, Synonyme) sind &ouml;ffentlich lesbar.</p>
       <div class="table-wrap">
         <table>
           <thead><tr><th>Tabelle</th><th>Inhalt</th><th>RLS</th></tr></thead>
           <tbody>
-            <!-- Copilot updates this table when Supabase migrations are applied -->
-            <tr><td><code>profiles</code></td><td>Nutzerprofile, Plan (free/pro)</td><td>Nur eigener Datensatz</td></tr>
+            <tr><td><code>allergens</code></td><td>EU-14-Pflichtallergene + 30 erweiterte Trigger, je mit Kategorie</td><td>Lesen f&uuml;r alle</td></tr>
+            <tr><td><code>ingredients</code></td><td>Normalisierte Zutaten-Stammliste</td><td>Lesen f&uuml;r alle</td></tr>
+            <tr><td><code>ingredient_allergen_map</code></td><td>n:m-Verkn&uuml;pfung Zutat &harr; Allergen</td><td>Lesen f&uuml;r alle</td></tr>
+            <tr><td><code>synonyms</code></td><td>Synonyme, Schreibweisen, mehrsprachige Aliase</td><td>Lesen f&uuml;r alle</td></tr>
+            <tr><td><code>products</code></td><td>EAN-indexierter Produkt-Cache (intern + Open Food Facts)</td><td>Lesen f&uuml;r alle</td></tr>
+            <tr><td><code>user_profiles</code></td><td>Anzeigename, Geburtsjahr, ausgew&auml;hlte Allergene</td><td>Nur eigener Datensatz</td></tr>
+            <tr><td><code>scan_results</code></td><td>Verlauf aller Pr&uuml;fungen pro Nutzer</td><td>Nur eigener Datensatz</td></tr>
           </tbody>
         </table>
       </div>
+      <p>Migrationen liegen unter <code>supabase/migrations/</code> und werden bei Deploy automatisch angewendet. Aktueller Stand: 11 Migrationen, zuletzt <code>20260529100000_add_birth_year_to_user_profiles.sql</code>.</p>
     </section>
 
     <!-- ── 7. CI/CD & Tests ───────────────────────────────────────── -->
     <section id="ci-cd">
       <h2><span class="num">07</span> CI/CD &amp; Tests</h2>
-      <p>Jeder Code-Push durchl&auml;uft automatisch Qualit&auml;ts-Gates. Ein Vercel-Deployment erfolgt nur bei Pull Requests (Preview) oder Merge in <code>main</code> (Produktion).</p>
+      <p>Jeder Push und Pull Request durchl&auml;uft automatisch Qualit&auml;ts-Gates. Produktions-Deploys auf <code>allergiescan.net</code> erfolgen automatisch bei Merge in <code>main</code> &uuml;ber Vercel.</p>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Workflow</th><th>Trigger</th><th>Befehl</th></tr></thead>
+          <thead><tr><th>Workflow</th><th>Trigger</th><th>Zweck</th></tr></thead>
           <tbody>
-            <!-- Copilot updates this table when GitHub Actions workflows change -->
-            <tr><td><code>deploy.yml</code></td><td>Manuell (workflow_dispatch)</td><td>Vercel Production/Preview Deploy</td></tr>
-            <tr><td><code>pr-pipeline.yml</code></td><td>Pull Request &rarr; main</td><td>Typecheck, Lint, Build, Tests</td></tr>
-            <tr><td><code>docs.yml</code></td><td>Push &rarr; main (docs/)</td><td>GitHub Pages (dieses Handbuch)</td></tr>
+            <tr><td><code>pr-pipeline.yml</code></td><td>Pull Request &rarr; main</td><td>Typecheck, Lint, Build</td></tr>
+            <tr><td><code>launch-checklist.yml</code></td><td>Manuell / vor Release</td><td>Pre-Deployment-Checks (Env-Vars, Middleware, Supabase)</td></tr>
+            <tr><td><code>deploy.yml</code></td><td>Push &rarr; main</td><td>Vercel Production Deploy auf <code>allergiescan.net</code></td></tr>
+            <tr><td><code>lp-generator.yml</code></td><td>Manuell</td><td>Landing-Page-Generator (Marketing-Assets)</td></tr>
           </tbody>
         </table>
       </div>
@@ -612,18 +638,18 @@
     <!-- ── 8. DSGVO & Compliance ──────────────────────────────────── -->
     <section id="compliance">
       <h2><span class="num">08</span> DSGVO &amp; Compliance</h2>
-      <p>[APP_NAME] verarbeitet personenbezogene Daten ausschlie&szlig;lich in der EU (Supabase, Region Frankfurt). Alle Verarbeitungen sind nach DSGVO dokumentiert.</p>
+      <p>AllergieScan verarbeitet personenbezogene Daten ausschlie&szlig;lich in der EU (Supabase, Region Frankfurt). Alle Verarbeitungen sind nach DSGVO dokumentiert.</p>
       <div class="table-wrap">
         <table>
           <thead><tr><th>DSGVO-Anforderung</th><th>Umsetzung</th></tr></thead>
           <tbody>
             <tr><td>Recht auf Auskunft (Art. 15)</td><td>Profil-Seite zeigt alle gespeicherten Daten</td></tr>
-            <tr><td>Recht auf L&ouml;schung (Art. 17)</td><td>Konto-L&ouml;schung im Profil, sofortige Datenlöschung inkl. Stripe-K&uuml;ndigung</td></tr>
-            <tr><td>Datenportabilit&auml;t (Art. 20)</td><td>Datenexport (JSON) im Profil</td></tr>
-            <tr><td>Cookie-Einwilligung</td><td>Cookie-Banner mit Opt-in bei erstem Besuch</td></tr>
-            <tr><td>Datensicherheit (Art. 32)</td><td>RLS auf allen Supabase-Tabellen, HTTPS, kein Client-seitiges Secret</td></tr>
-            <tr><td>Impressum &amp; Datenschutzerkl&auml;rung</td><td>Verf&uuml;gbar unter <code>/[locale]/impressum</code> und <code>/[locale]/datenschutz</code></td></tr>
-            <tr><td>AGB</td><td>Verf&uuml;gbar unter <code>/[locale]/agb</code></td></tr>
+            <tr><td>Recht auf L&ouml;schung (Art. 17)</td><td>Konto-L&ouml;schung im Profil, sofortige Datenl&ouml;schung in Supabase</td></tr>
+            <tr><td>Datenportabilit&auml;t (Art. 20)</td><td>Datenexport auf Anfrage (CSV/JSON)</td></tr>
+            <tr><td>Cookie-Einwilligung</td><td>Nur technisch notwendige Cookies (Supabase-Session, Locale, Theme)</td></tr>
+            <tr><td>Datensicherheit (Art. 32)</td><td>RLS auf allen nutzerbezogenen Tabellen, HTTPS, keine Client-Secrets</td></tr>
+            <tr><td>Impressum &amp; Datenschutzerkl&auml;rung</td><td>Verf&uuml;gbar unter <code>/[locale]/legal/impressum</code> und <code>/[locale]/legal/datenschutz</code></td></tr>
+            <tr><td>AGB</td><td>Verf&uuml;gbar unter <code>/[locale]/legal/agb</code></td></tr>
           </tbody>
         </table>
       </div>
@@ -636,13 +662,14 @@
         <table>
           <thead><tr><th>Begriff</th><th>Erkl&auml;rung</th></tr></thead>
           <tbody>
-            <!-- Copilot extends this glossary with domain-specific terms as features are added -->
             <tr><td><strong>RLS</strong></td><td>Row Level Security &ndash; Datenbankebenen-Zugriffsschutz in Supabase/PostgreSQL</td></tr>
             <tr><td><strong>SSR</strong></td><td>Server-Side Rendering &ndash; Seitenrendering auf dem Server (Next.js App Router Standard)</td></tr>
-            <tr><td><strong>SaaS</strong></td><td>Software as a Service &ndash; webbasierte Software, die als Abonnement bereitgestellt wird</td></tr>
-            <tr><td><strong>WAMOCON</strong></td><td>WAMOCON GmbH &ndash; Betreiber und Entwickler von [APP_NAME]</td></tr>
-            <tr><td><strong>Feature-Gate</strong></td><td>Serverseitiger Mechanismus, der Pro-Funktionen f&uuml;r Free-Nutzer sperrt</td></tr>
-            <tr><td><strong>CAC</strong></td><td>Customer Acquisition Cost &ndash; Kosten zur Gewinnung eines neuen Kunden</td></tr>
+            <tr><td><strong>EAN</strong></td><td>European Article Number &ndash; Strichcode auf Lebensmittelverpackungen (8 oder 13 Stellen)</td></tr>
+            <tr><td><strong>EU-14</strong></td><td>Die 14 in der EU kennzeichnungspflichtigen Allergene laut LMIV Anhang II</td></tr>
+            <tr><td><strong>Top-30</strong></td><td>30 zus&auml;tzliche h&auml;ufige Trigger (z.&nbsp;B. Histamin, Tomate, Erdbeere) &uuml;ber die EU-14 hinaus</td></tr>
+            <tr><td><strong>Open Food Facts</strong></td><td>Offene, weltweite Produktdatenbank, dient als Fallback f&uuml;r Suche und EAN-Lookup</td></tr>
+            <tr><td><strong>Ampel</strong></td><td>Gr&uuml;n / Gelb / Rot &ndash; visuelle Bewertung eines Produkts gegen das Nutzerprofil</td></tr>
+            <tr><td><strong>WAMOCON</strong></td><td>WAMOCON GmbH &ndash; Betreiber und Entwickler von AllergieScan</td></tr>
           </tbody>
         </table>
       </div>
@@ -653,8 +680,8 @@
 
 <!-- ── Footer ───────────────────────────────────────────────────────── -->
 <footer class="page-footer">
-  <div>&copy; 2026 WAMOCON GmbH &ndash; Alle Rechte vorbehalten</div>
-  <div>[APP_NAME] Produkthandbuch v[APP_VERSION] &middot; Vertraulich &middot; [LAST_UPDATED]</div>
+  <div>&copy; 2026 WAMOCON GmbH &ndash; Alle Rechte vorbehalten &middot; <a href="https://allergiescan.net">allergiescan.net</a></div>
+  <div>AllergieScan Produkthandbuch v0.1.0 &middot; Vertraulich &middot; Mai 2026</div>
 </footer>
 
 <!-- ── Smooth active TOC highlighting ───────────────────────────────── -->
