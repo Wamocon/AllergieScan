@@ -113,8 +113,16 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-16">
-        <span className="h-5 w-5 animate-spin rounded-full border-2 border-app border-t-brand" />
+      <div className="mx-auto max-w-4xl px-4 py-8 lg:py-12 animate-pulse">
+        <div className="h-3 w-24 rounded-full bg-canvas-raised" />
+        <div className="mt-4 h-10 w-48 rounded-2xl bg-canvas-raised" />
+        <div className="mt-3 h-4 w-56 rounded-full bg-canvas-raised" />
+        <div className="mt-8 h-20 rounded-[24px] border border-app bg-surface" />
+        <div className="mt-6 grid gap-2 sm:grid-cols-2">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="h-14 rounded-2xl border border-app bg-surface" />
+          ))}
+        </div>
       </div>
     )
   }

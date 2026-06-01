@@ -34,6 +34,21 @@ export async function GET(
     })
   }
 
+  // 1b. Check product cache (V8)
+  const { data: cached } = await supabase
+    .from('product_cache')
+    .select('ean, name, brand, ingredients_text')
+    .eq('ean', ean)
+    .gt('expires_at', new Date().toISOString())
+    .single()
+
+  if (cached) {
+    return NextResponse.json({
+      product: cached,
+      source: 'cache',
+    })
+  }
+
   // 2. Fall back to OpenFoodFacts
   try {
     const offResponse = await fetch(
@@ -80,6 +95,19 @@ export async function GET(
       })
       .select('id, ean, name, brand, ingredients_text')
       .single()
+
+    // 3b. Also populate product cache (V8)
+    await supabase
+      .from('product_cache')
+      .upsert({
+        ean,
+        name: offProduct.product_name || 'Unknown',
+        brand: offProduct.brands || '',
+        ingredients_text: ingredientsText,
+        raw_data: offProduct,
+        fetched_at: new Date().toISOString(),
+        expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+      })
 
     return NextResponse.json({
       product: saved || { ean, name: offProduct.product_name, brand: offProduct.brands, ingredients_text: ingredientsText },
