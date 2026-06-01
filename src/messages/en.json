@@ -110,6 +110,8 @@
     "startCamera": "Start camera",
     "stopCamera": "Stop camera",
     "capturePhoto": "Take photo",
+    "aimCameraHint": "Hold barcode in view, then take a photo",
+    "retakePhoto": "Retake photo",
     "noBarcode": "No barcode found in photo. Please enter EAN manually.",
     "continueScanning": "Continue scanning",
     "processingPhoto": "Processing photo ...",

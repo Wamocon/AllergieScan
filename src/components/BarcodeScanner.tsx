@@ -59,7 +59,7 @@ export function BarcodeScanner({ onProductFound }: BarcodeScannerProps) {
     setNoBarcodeInPhoto(false)
     setLookupStatus(t('processingPhoto'))
 
-    // Try to detect barcode in the captured frame
+    // 1. Try native BarcodeDetector
     if (hasNativeBarcodeDetector()) {
       try {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -77,6 +77,30 @@ export function BarcodeScanner({ onProductFound }: BarcodeScannerProps) {
         }
       } catch { /* fallthrough */ }
     }
+
+    // 2. Fallback: html5-qrcode scanFile on captured canvas blob
+    try {
+      const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/jpeg', 0.92))
+      if (blob) {
+        const file = new File([blob], 'capture.jpg', { type: 'image/jpeg' })
+        const { Html5Qrcode } = await import('html5-qrcode')
+        const tempId = '__allergiescan_file_scan__'
+        if (!document.getElementById(tempId)) {
+          const div = document.createElement('div')
+          div.id = tempId
+          div.style.display = 'none'
+          document.body.appendChild(div)
+        }
+        const scanner = new Html5Qrcode(tempId)
+        const ean = await scanner.scanFile(file, false)
+        setLookupStatus('')
+        setCapturedImage(null)
+        stopScanning()
+        handleBarcodeLookup(ean)
+        return
+      }
+    } catch { /* fallthrough */ }
+
     setLookupStatus('')
     setNoBarcodeInPhoto(true)
   }
@@ -84,26 +108,7 @@ export function BarcodeScanner({ onProductFound }: BarcodeScannerProps) {
   function dismissCapture() {
     setCapturedImage(null)
     setNoBarcodeInPhoto(false)
-    // Resume live scan loop if native camera is still active
-    if (streamRef.current && videoRef.current && hasNativeBarcodeDetector()) {
-      const video = videoRef.current
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const detector = new (window as any).BarcodeDetector({ formats: BARCODE_FORMATS })
-      const scan = () => {
-        if (!videoRef.current || !streamRef.current) return
-        detector.detect(video)
-          .then((barcodes: { rawValue: string }[]) => {
-            if (barcodes.length > 0) {
-              stopScanning()
-              handleBarcodeLookup(barcodes[0].rawValue)
-            } else {
-              scanTimerRef.current = setTimeout(scan, 200)
-            }
-          })
-          .catch(() => { scanTimerRef.current = setTimeout(scan, 200) })
-      }
-      scanTimerRef.current = setTimeout(scan, 0)
-    }
+    // Camera stream stays active - user takes another photo manually
   }
 
   async function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
@@ -181,23 +186,7 @@ export function BarcodeScanner({ onProductFound }: BarcodeScannerProps) {
         videoRef.current.srcObject = stream
         await videoRef.current.play()
       }
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const detector = new (window as any).BarcodeDetector({ formats: BARCODE_FORMATS })
-      const scan = () => {
-        if (!videoRef.current || !streamRef.current) return
-        detector.detect(videoRef.current)
-          .then((barcodes: { rawValue: string }[]) => {
-            if (barcodes.length > 0) {
-              stopScanning()
-              handleBarcodeLookup(barcodes[0].rawValue)
-            } else {
-              scanTimerRef.current = setTimeout(scan, 200)
-            }
-          })
-          .catch(() => { scanTimerRef.current = setTimeout(scan, 200) })
-      }
-      scanTimerRef.current = setTimeout(scan, 0)
+      // No auto-scan loop — user captures a photo manually via the shutter button
     } catch (err) {
       setScanning(false)
       if (err instanceof Error && err.message.includes('Permission')) {
@@ -321,7 +310,7 @@ export function BarcodeScanner({ onProductFound }: BarcodeScannerProps) {
               onClick={dismissCapture}
               className="w-full rounded-full border border-app bg-surface px-4 py-2 text-sm font-medium text-app transition-colors hover:bg-canvas-raised"
             >
-              {t('continueScanning')}
+              {t('retakePhoto')}
             </button>
           </div>
         </div>
@@ -335,12 +324,24 @@ export function BarcodeScanner({ onProductFound }: BarcodeScannerProps) {
           playsInline
           muted
         />
+        {/* Hint overlay */}
+        <div className="pointer-events-none absolute inset-x-0 top-3 flex justify-center">
+          <span className="rounded-full bg-black/50 px-4 py-1.5 text-xs font-medium text-white backdrop-blur-sm">
+            {t('aimCameraHint')}
+          </span>
+        </div>
+        {/* Shutter button */}
         <button
           onClick={capturePhoto}
           aria-label={t('capturePhoto')}
-          className="absolute bottom-3 left-1/2 -translate-x-1/2 flex h-14 w-14 items-center justify-center rounded-full border-4 border-white bg-white/20 shadow-lg backdrop-blur-sm transition-transform active:scale-95"
+          className="absolute bottom-4 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1"
         >
-          <div className="h-10 w-10 rounded-full bg-white" />
+          <div className="flex h-16 w-16 items-center justify-center rounded-full border-4 border-white bg-white/20 shadow-lg backdrop-blur-sm transition-transform active:scale-95">
+            <div className="h-12 w-12 rounded-full bg-white" />
+          </div>
+          <span className="rounded-full bg-black/50 px-3 py-0.5 text-[11px] font-semibold text-white backdrop-blur-sm">
+            {t('capturePhoto')}
+          </span>
         </button>
       </div>
       {/* html5-qrcode fallback container */}
