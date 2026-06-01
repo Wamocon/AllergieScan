@@ -34,8 +34,10 @@ export function BarcodeScanner({ onProductFound }: BarcodeScannerProps) {
   const scannerRef = useRef<HTMLDivElement>(null)
   const html5QrCodeRef = useRef<unknown>(null)
   const scanTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const detectionLoopRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [manualEan, setManualEan] = useState('')
+  const [liveStatus, setLiveStatus] = useState<'idle' | 'searching' | 'found'>('idle')
 
   function clearScanTimer() {
     if (scanTimerRef.current !== null) {
@@ -44,8 +46,49 @@ export function BarcodeScanner({ onProductFound }: BarcodeScannerProps) {
     }
   }
 
+  function clearDetectionLoop() {
+    if (detectionLoopRef.current !== null) {
+      clearTimeout(detectionLoopRef.current)
+      detectionLoopRef.current = null
+    }
+  }
+
+  function startDetectionLoop() {
+    if (!hasNativeBarcodeDetector()) return
+    setLiveStatus('searching')
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const detector = new (window as any).BarcodeDetector({ formats: BARCODE_FORMATS })
+    const detectLoop = async () => {
+      if (!videoRef.current || !streamRef.current) return
+      try {
+        const barcodes = await detector.detect(videoRef.current)
+        if (barcodes.length > 0) {
+          setLiveStatus('found')
+          clearDetectionLoop()
+          // Auto-capture after 500ms visual feedback
+          detectionLoopRef.current = setTimeout(() => {
+            void stopScanningAndLookup(barcodes[0].rawValue)
+          }, 500)
+        } else {
+          setLiveStatus('searching')
+          detectionLoopRef.current = setTimeout(detectLoop, 350)
+        }
+      } catch {
+        detectionLoopRef.current = setTimeout(detectLoop, 350)
+      }
+    }
+    detectionLoopRef.current = setTimeout(detectLoop, 500)
+  }
+
+  async function stopScanningAndLookup(ean: string) {
+    await stopScanning()
+    handleBarcodeLookup(ean)
+  }
+
   async function capturePhoto() {
     if (!videoRef.current) return
+    clearDetectionLoop()
+    setLiveStatus('idle')
     const video = videoRef.current
     const canvas = document.createElement('canvas')
     canvas.width = video.videoWidth || 1280
@@ -108,7 +151,10 @@ export function BarcodeScanner({ onProductFound }: BarcodeScannerProps) {
   function dismissCapture() {
     setCapturedImage(null)
     setNoBarcodeInPhoto(false)
-    // Camera stream stays active - user takes another photo manually
+    // Restart live detection if camera is still active
+    if (streamRef.current && videoRef.current) {
+      startDetectionLoop()
+    }
   }
 
   async function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
@@ -187,6 +233,8 @@ export function BarcodeScanner({ onProductFound }: BarcodeScannerProps) {
         await videoRef.current.play()
       }
       // No auto-scan loop — user captures a photo manually via the shutter button
+      // Start live detection loop for real-time visual feedback + auto-capture
+      startDetectionLoop()
     } catch (err) {
       setScanning(false)
       if (err instanceof Error && err.message.includes('Permission')) {
@@ -228,6 +276,8 @@ export function BarcodeScanner({ onProductFound }: BarcodeScannerProps) {
 
   async function stopScanning() {
     clearScanTimer()
+    clearDetectionLoop()
+    setLiveStatus('idle')
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((track) => track.stop())
       streamRef.current = null
@@ -276,6 +326,7 @@ export function BarcodeScanner({ onProductFound }: BarcodeScannerProps) {
   useEffect(() => {
     return () => {
       if (scanTimerRef.current !== null) clearTimeout(scanTimerRef.current)
+      if (detectionLoopRef.current !== null) clearTimeout(detectionLoopRef.current)
       if (streamRef.current) streamRef.current.getTracks().forEach((track) => track.stop())
       if (html5QrCodeRef.current) {
         (html5QrCodeRef.current as { stop: () => Promise<void> }).stop().catch(() => {})
@@ -316,33 +367,57 @@ export function BarcodeScanner({ onProductFound }: BarcodeScannerProps) {
         </div>
       )}
 
-      {/* Native BarcodeDetector: video + shutter button */}
-      <div className={`relative ${scanning && hasNativeBarcodeDetector() && !capturedImage ? '' : 'hidden'}`}>
-        <video
-          ref={videoRef}
-          className="w-full overflow-hidden rounded-2xl border border-app bg-canvas-raised"
-          playsInline
-          muted
-        />
-        {/* Hint overlay */}
-        <div className="pointer-events-none absolute inset-x-0 top-3 flex justify-center">
-          <span className="rounded-full bg-black/50 px-4 py-1.5 text-xs font-medium text-white backdrop-blur-sm">
-            {t('aimCameraHint')}
-          </span>
-        </div>
-        {/* Shutter button */}
-        <button
-          onClick={capturePhoto}
-          aria-label={t('capturePhoto')}
-          className="absolute bottom-4 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1"
-        >
-          <div className="flex h-16 w-16 items-center justify-center rounded-full border-4 border-white bg-white/20 shadow-lg backdrop-blur-sm transition-transform active:scale-95">
-            <div className="h-12 w-12 rounded-full bg-white" />
+      {/* Native BarcodeDetector: live viewfinder with detection overlays */}
+      <div className={`${scanning && hasNativeBarcodeDetector() && !capturedImage ? '' : 'hidden'}`}>
+        {/* Video frame with overlays */}
+        <div className="relative overflow-hidden rounded-2xl border border-app">
+          <video
+            ref={videoRef}
+            className="block w-full bg-canvas-raised"
+            playsInline
+            muted
+          />
+          {/* Dim vignette */}
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/40" />
+          {/* Scanning aim frame – corner brackets */}
+          <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+            <div className="relative h-44 w-64">
+              <span className={`absolute left-0 top-0 h-8 w-8 rounded-tl border-l-[3px] border-t-[3px] transition-colors duration-300 ${liveStatus === 'found' ? 'border-green-400' : 'border-white/90'}`} />
+              <span className={`absolute right-0 top-0 h-8 w-8 rounded-tr border-r-[3px] border-t-[3px] transition-colors duration-300 ${liveStatus === 'found' ? 'border-green-400' : 'border-white/90'}`} />
+              <span className={`absolute bottom-0 left-0 h-8 w-8 rounded-bl border-b-[3px] border-l-[3px] transition-colors duration-300 ${liveStatus === 'found' ? 'border-green-400' : 'border-white/90'}`} />
+              <span className={`absolute bottom-0 right-0 h-8 w-8 rounded-br border-b-[3px] border-r-[3px] transition-colors duration-300 ${liveStatus === 'found' ? 'border-green-400' : 'border-white/90'}`} />
+              {/* Center alignment dot */}
+              <span className="absolute left-1/2 top-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/60" />
+            </div>
           </div>
-          <span className="rounded-full bg-black/50 px-3 py-0.5 text-[11px] font-semibold text-white backdrop-blur-sm">
-            {t('capturePhoto')}
-          </span>
-        </button>
+          {/* Live status bar at bottom */}
+          <div className={`absolute inset-x-0 bottom-0 flex items-center justify-center gap-2 py-3 text-sm font-semibold text-white backdrop-blur-sm transition-colors duration-300 ${liveStatus === 'found' ? 'bg-green-500/80' : 'bg-black/55'}`}>
+            {liveStatus === 'found' ? (
+              <>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+                {t('liveBarcodeFound')}
+              </>
+            ) : (
+              <>
+                <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                {t('liveSearching')}
+              </>
+            )}
+          </div>
+        </div>
+        {/* Shutter button – below the video */}
+        <div className="mt-3 flex flex-col items-center gap-1">
+          <button
+            onClick={capturePhoto}
+            aria-label={t('capturePhoto')}
+            className="flex h-16 w-16 items-center justify-center rounded-full border-4 border-brand bg-brand/10 shadow-brand transition-transform active:scale-95"
+          >
+            <div className="h-10 w-10 rounded-full bg-brand" />
+          </button>
+          <span className="text-xs font-medium text-app-muted">{t('capturePhoto')}</span>
+        </div>
       </div>
       {/* html5-qrcode fallback container */}
       <div

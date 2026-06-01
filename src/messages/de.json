@@ -112,6 +112,8 @@
     "capturePhoto": "Foto aufnehmen",
     "aimCameraHint": "Barcode ins Bild halten, dann Foto aufnehmen",
     "retakePhoto": "Erneut aufnehmen",
+    "liveSearching": "Barcode suchen ...",
+    "liveBarcodeFound": "Barcode erkannt - wird aufgenommen ...",
     "noBarcode": "Kein Barcode im Foto erkannt. Bitte EAN manuell eingeben.",
     "continueScanning": "Weiter scannen",
     "processingPhoto": "Foto wird verarbeitet ...",
