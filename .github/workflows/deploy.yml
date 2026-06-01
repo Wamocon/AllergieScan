@@ -23,6 +23,8 @@
 name: Deploy to Vercel
 
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
     inputs:
       environment:
@@ -41,9 +43,9 @@ on:
 
 jobs:
   deploy:
-    name: Deploy - ${{ inputs.environment }}
+    name: Deploy - ${{ inputs.environment || 'production' }}
     uses: Wamocon/github_workflow/.github/workflows/deploy.yml@main
     with:
-      vercel_env: ${{ inputs.environment }}
-      db_schema: ${{ inputs.db_schema }}
+      vercel_env: ${{ inputs.environment || 'production' }}
+      db_schema: ${{ inputs.db_schema || '' }}
     secrets: inherit
