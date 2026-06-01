@@ -25,12 +25,78 @@ export function BarcodeScanner({ onProductFound }: BarcodeScannerProps) {
   const [scanning, setScanning] = useState(false)
   const [error, setError] = useState('')
   const [lookupStatus, setLookupStatus] = useState('')
+  const [capturedImage, setCapturedImage] = useState<string | null>(null)
+  const [noBarcodeInPhoto, setNoBarcodeInPhoto] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
   const streamRef = useRef<MediaStream | null>(null)
   const scannerRef = useRef<HTMLDivElement>(null)
   const html5QrCodeRef = useRef<unknown>(null)
   const animFrameRef = useRef<number>(0)
   const [manualEan, setManualEan] = useState('')
+
+  async function capturePhoto() {
+    if (!videoRef.current) return
+    const video = videoRef.current
+    const canvas = document.createElement('canvas')
+    canvas.width = video.videoWidth || 1280
+    canvas.height = video.videoHeight || 720
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.9)
+    setCapturedImage(dataUrl)
+    setNoBarcodeInPhoto(false)
+
+    // Pause live scanning while reviewing photo
+    if (animFrameRef.current) {
+      cancelAnimationFrame(animFrameRef.current)
+      animFrameRef.current = 0
+    }
+
+    // Try to detect barcode in the captured frame
+    if (hasNativeBarcodeDetector()) {
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const detector = new (window as any).BarcodeDetector({ formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e'] })
+        const img = new Image()
+        img.src = dataUrl
+        await new Promise<void>((resolve) => { img.onload = () => resolve() })
+        const barcodes = await detector.detect(img)
+        if (barcodes.length > 0) {
+          stopScanning()
+          setCapturedImage(null)
+          handleBarcodeLookup(barcodes[0].rawValue)
+          return
+        }
+      } catch { /* fallthrough */ }
+    }
+    // No barcode found in photo
+    setNoBarcodeInPhoto(true)
+  }
+
+  function dismissCapture() {
+    setCapturedImage(null)
+    setNoBarcodeInPhoto(false)
+    // Resume live scanning
+    if (streamRef.current && videoRef.current) {
+      const video = videoRef.current
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const detector = new (window as any).BarcodeDetector({ formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e'] })
+      const scan = async () => {
+        if (!videoRef.current || !streamRef.current) return
+        try {
+          const barcodes = await detector.detect(video)
+          if (barcodes.length > 0) {
+            stopScanning()
+            handleBarcodeLookup(barcodes[0].rawValue)
+            return
+          }
+        } catch { /* continue */ }
+        animFrameRef.current = requestAnimationFrame(scan)
+      }
+      animFrameRef.current = requestAnimationFrame(scan)
+    }
+  }
 
   async function startScanning() {
     setError('')
@@ -172,13 +238,43 @@ export function BarcodeScanner({ onProductFound }: BarcodeScannerProps) {
 
   return (
     <div className="space-y-4">
-      {/* Native BarcodeDetector video */}
-      <video
-        ref={videoRef}
-        className={`w-full overflow-hidden rounded-2xl border border-app bg-canvas-raised ${scanning && hasNativeBarcodeDetector() ? 'block' : 'hidden'}`}
-        playsInline
-        muted
-      />
+      {/* Captured photo preview */}
+      {capturedImage && (
+        <div className="overflow-hidden rounded-2xl border border-app">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={capturedImage} alt="Aufgenommenes Foto" className="w-full object-cover" />
+          {noBarcodeInPhoto && (
+            <div className="border-t border-app bg-warning-tint p-3 text-sm text-warning">
+              {t('noBarcode')}
+            </div>
+          )}
+          <div className="border-t border-app p-3">
+            <button
+              onClick={dismissCapture}
+              className="w-full rounded-full border border-app bg-surface px-4 py-2 text-sm font-medium text-app transition-colors hover:bg-canvas-raised"
+            >
+              {t('continueScanning')}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Native BarcodeDetector: video + shutter button */}
+      <div className={`relative ${scanning && hasNativeBarcodeDetector() && !capturedImage ? '' : 'hidden'}`}>
+        <video
+          ref={videoRef}
+          className="w-full overflow-hidden rounded-2xl border border-app bg-canvas-raised"
+          playsInline
+          muted
+        />
+        <button
+          onClick={capturePhoto}
+          aria-label={t('capturePhoto')}
+          className="absolute bottom-3 left-1/2 -translate-x-1/2 flex h-14 w-14 items-center justify-center rounded-full border-4 border-white bg-white/20 shadow-lg backdrop-blur-sm transition-transform active:scale-95"
+        >
+          <div className="h-10 w-10 rounded-full bg-white" />
+        </button>
+      </div>
       {/* html5-qrcode fallback container */}
       <div
         ref={scannerRef}
