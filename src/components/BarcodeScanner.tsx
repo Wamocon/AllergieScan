@@ -20,6 +20,8 @@ function hasNativeBarcodeDetector(): boolean {
   return typeof window !== 'undefined' && 'BarcodeDetector' in window
 }
 
+const BARCODE_FORMATS = ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'code_128']
+
 export function BarcodeScanner({ onProductFound }: BarcodeScannerProps) {
   const t = useTranslations('scan')
   const [scanning, setScanning] = useState(false)
@@ -31,8 +33,16 @@ export function BarcodeScanner({ onProductFound }: BarcodeScannerProps) {
   const streamRef = useRef<MediaStream | null>(null)
   const scannerRef = useRef<HTMLDivElement>(null)
   const html5QrCodeRef = useRef<unknown>(null)
-  const animFrameRef = useRef<number>(0)
+  const scanTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const [manualEan, setManualEan] = useState('')
+
+  function clearScanTimer() {
+    if (scanTimerRef.current !== null) {
+      clearTimeout(scanTimerRef.current)
+      scanTimerRef.current = null
+    }
+  }
 
   async function capturePhoto() {
     if (!videoRef.current) return
@@ -43,59 +53,111 @@ export function BarcodeScanner({ onProductFound }: BarcodeScannerProps) {
     const ctx = canvas.getContext('2d')
     if (!ctx) return
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
-    const dataUrl = canvas.toDataURL('image/jpeg', 0.9)
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.92)
+    clearScanTimer()
     setCapturedImage(dataUrl)
     setNoBarcodeInPhoto(false)
-
-    // Pause live scanning while reviewing photo
-    if (animFrameRef.current) {
-      cancelAnimationFrame(animFrameRef.current)
-      animFrameRef.current = 0
-    }
+    setLookupStatus(t('processingPhoto'))
 
     // Try to detect barcode in the captured frame
     if (hasNativeBarcodeDetector()) {
       try {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const detector = new (window as any).BarcodeDetector({ formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e'] })
+        const detector = new (window as any).BarcodeDetector({ formats: BARCODE_FORMATS })
         const img = new Image()
         img.src = dataUrl
         await new Promise<void>((resolve) => { img.onload = () => resolve() })
         const barcodes = await detector.detect(img)
         if (barcodes.length > 0) {
-          stopScanning()
+          setLookupStatus('')
           setCapturedImage(null)
+          stopScanning()
           handleBarcodeLookup(barcodes[0].rawValue)
           return
         }
       } catch { /* fallthrough */ }
     }
-    // No barcode found in photo
+    setLookupStatus('')
     setNoBarcodeInPhoto(true)
   }
 
   function dismissCapture() {
     setCapturedImage(null)
     setNoBarcodeInPhoto(false)
-    // Resume live scanning
-    if (streamRef.current && videoRef.current) {
+    // Resume live scan loop if native camera is still active
+    if (streamRef.current && videoRef.current && hasNativeBarcodeDetector()) {
       const video = videoRef.current
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const detector = new (window as any).BarcodeDetector({ formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e'] })
-      const scan = async () => {
+      const detector = new (window as any).BarcodeDetector({ formats: BARCODE_FORMATS })
+      const scan = () => {
         if (!videoRef.current || !streamRef.current) return
-        try {
-          const barcodes = await detector.detect(video)
-          if (barcodes.length > 0) {
-            stopScanning()
-            handleBarcodeLookup(barcodes[0].rawValue)
-            return
-          }
-        } catch { /* continue */ }
-        animFrameRef.current = requestAnimationFrame(scan)
+        detector.detect(video)
+          .then((barcodes: { rawValue: string }[]) => {
+            if (barcodes.length > 0) {
+              stopScanning()
+              handleBarcodeLookup(barcodes[0].rawValue)
+            } else {
+              scanTimerRef.current = setTimeout(scan, 200)
+            }
+          })
+          .catch(() => { scanTimerRef.current = setTimeout(scan, 200) })
       }
-      animFrameRef.current = requestAnimationFrame(scan)
+      scanTimerRef.current = setTimeout(scan, 0)
     }
+  }
+
+  async function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    e.target.value = ''
+    clearScanTimer()
+    const dataUrl = await new Promise<string>((resolve) => {
+      const reader = new FileReader()
+      reader.onload = (ev) => resolve(ev.target!.result as string)
+      reader.readAsDataURL(file)
+    })
+    setCapturedImage(dataUrl)
+    setNoBarcodeInPhoto(false)
+    setLookupStatus(t('processingPhoto'))
+
+    // 1. Try native BarcodeDetector
+    if (hasNativeBarcodeDetector()) {
+      try {
+        const bitmap = await createImageBitmap(file)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const detector = new (window as any).BarcodeDetector({ formats: BARCODE_FORMATS })
+        const barcodes = await detector.detect(bitmap)
+        if (barcodes.length > 0) {
+          setLookupStatus('')
+          setCapturedImage(null)
+          stopScanning()
+          handleBarcodeLookup(barcodes[0].rawValue)
+          return
+        }
+      } catch { /* fallthrough */ }
+    }
+
+    // 2. Fallback: html5-qrcode scanFile
+    try {
+      const { Html5Qrcode } = await import('html5-qrcode')
+      const tempId = '__allergiescan_file_scan__'
+      if (!document.getElementById(tempId)) {
+        const div = document.createElement('div')
+        div.id = tempId
+        div.style.display = 'none'
+        document.body.appendChild(div)
+      }
+      const scanner = new Html5Qrcode(tempId)
+      const ean = await scanner.scanFile(file, false)
+      setLookupStatus('')
+      setCapturedImage(null)
+      stopScanning()
+      handleBarcodeLookup(ean)
+      return
+    } catch { /* fallthrough */ }
+
+    setLookupStatus('')
+    setNoBarcodeInPhoto(true)
   }
 
   async function startScanning() {
@@ -121,21 +183,21 @@ export function BarcodeScanner({ onProductFound }: BarcodeScannerProps) {
       }
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const detector = new (window as any).BarcodeDetector({ formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e'] })
-
-      const scan = async () => {
+      const detector = new (window as any).BarcodeDetector({ formats: BARCODE_FORMATS })
+      const scan = () => {
         if (!videoRef.current || !streamRef.current) return
-        try {
-          const barcodes = await detector.detect(videoRef.current)
-          if (barcodes.length > 0) {
-            stopScanning()
-            handleBarcodeLookup(barcodes[0].rawValue)
-            return
-          }
-        } catch { /* detection frame error, continue */ }
-        animFrameRef.current = requestAnimationFrame(scan)
+        detector.detect(videoRef.current)
+          .then((barcodes: { rawValue: string }[]) => {
+            if (barcodes.length > 0) {
+              stopScanning()
+              handleBarcodeLookup(barcodes[0].rawValue)
+            } else {
+              scanTimerRef.current = setTimeout(scan, 200)
+            }
+          })
+          .catch(() => { scanTimerRef.current = setTimeout(scan, 200) })
       }
-      animFrameRef.current = requestAnimationFrame(scan)
+      scanTimerRef.current = setTimeout(scan, 0)
     } catch (err) {
       setScanning(false)
       if (err instanceof Error && err.message.includes('Permission')) {
@@ -176,11 +238,7 @@ export function BarcodeScanner({ onProductFound }: BarcodeScannerProps) {
   }
 
   async function stopScanning() {
-    // Stop native camera
-    if (animFrameRef.current) {
-      cancelAnimationFrame(animFrameRef.current)
-      animFrameRef.current = 0
-    }
+    clearScanTimer()
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((track) => track.stop())
       streamRef.current = null
@@ -228,8 +286,8 @@ export function BarcodeScanner({ onProductFound }: BarcodeScannerProps) {
 
   useEffect(() => {
     return () => {
-      if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current)
-      if (streamRef.current) streamRef.current.getTracks().forEach((t) => t.stop())
+      if (scanTimerRef.current !== null) clearTimeout(scanTimerRef.current)
+      if (streamRef.current) streamRef.current.getTracks().forEach((track) => track.stop())
       if (html5QrCodeRef.current) {
         (html5QrCodeRef.current as { stop: () => Promise<void> }).stop().catch(() => {})
       }
@@ -238,7 +296,17 @@ export function BarcodeScanner({ onProductFound }: BarcodeScannerProps) {
 
   return (
     <div className="space-y-4">
-      {/* Captured photo preview */}
+      {/* Hidden file input – on mobile opens camera, on desktop opens file picker */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        className="hidden"
+        onChange={handleFileUpload}
+      />
+
+      {/* Captured / uploaded photo preview */}
       {capturedImage && (
         <div className="overflow-hidden rounded-2xl border border-app">
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -281,26 +349,53 @@ export function BarcodeScanner({ onProductFound }: BarcodeScannerProps) {
         className={`overflow-hidden rounded-2xl border border-app bg-canvas-raised ${scanning && !hasNativeBarcodeDetector() ? 'min-h-[250px]' : 'hidden'}`}
       />
 
+      {/* Start camera + Upload photo */}
       {!scanning && (
-        <button
-          onClick={startScanning}
-          className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-brand px-6 py-3 text-sm font-medium text-on-brand shadow-brand transition-all hover:bg-brand-hover"
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-            <circle cx="12" cy="13" r="4" />
-          </svg>
-          {t('startCamera')}
-        </button>
+        <div className="flex flex-col gap-2">
+          <button
+            onClick={startScanning}
+            className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-brand px-6 py-3 text-sm font-medium text-on-brand shadow-brand transition-all hover:bg-brand-hover"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+              <circle cx="12" cy="13" r="4" />
+            </svg>
+            {t('startCamera')}
+          </button>
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-app bg-surface px-6 py-3 text-sm font-medium text-app transition-colors hover:bg-canvas-raised"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="17 8 12 3 7 8" />
+              <line x1="12" y1="3" x2="12" y2="15" />
+            </svg>
+            {t('uploadPhoto')}
+          </button>
+        </div>
       )}
 
       {scanning && (
-        <button
-          onClick={stopScanning}
-          className="w-full rounded-full border border-app bg-surface px-6 py-2.5 text-sm font-medium text-app transition-colors hover:bg-canvas-raised"
-        >
-          {t('stopCamera')}
-        </button>
+        <div className="flex flex-col gap-2">
+          <button
+            onClick={stopScanning}
+            className="w-full rounded-full border border-app bg-surface px-6 py-2.5 text-sm font-medium text-app transition-colors hover:bg-canvas-raised"
+          >
+            {t('stopCamera')}
+          </button>
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-app bg-surface px-6 py-2.5 text-sm font-medium text-app transition-colors hover:bg-canvas-raised"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="17 8 12 3 7 8" />
+              <line x1="12" y1="3" x2="12" y2="15" />
+            </svg>
+            {t('uploadPhoto')}
+          </button>
+        </div>
       )}
 
       <div className="border-t border-app pt-4">

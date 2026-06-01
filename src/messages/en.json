@@ -112,6 +112,8 @@
     "capturePhoto": "Take photo",
     "noBarcode": "No barcode found in photo. Please enter EAN manually.",
     "continueScanning": "Continue scanning",
+    "processingPhoto": "Processing photo ...",
+    "uploadPhoto": "Upload photo",
     "manualEanLabel": "Or enter EAN code manually:",
     "lookupButton": "Look up",
     "lookingUp": "Looking up product...",
